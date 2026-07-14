@@ -36,36 +36,35 @@ public class InputManager : MonoBehaviour
 
     public void OnInteraction(InputAction.CallbackContext context)
     {
-        if(context.interaction is HoldInteraction && context.performed)
-        {
-            // 오브젝트가 문이면 문 살살 열기/닫기
-
-            Debug.Log("홀드 진입");
-            
-            IsInteracting = true;
-        }
+        if (context.started) IsInteracting = true;
+        if (context.performed) Debug.Log("홀드 진입");
         if (context.canceled)
         {
-            if (!IsInteracting)
+            if (IsInteracting)
             {
-                Debug.Log("일반 상호작용 실행");
-
-                // 오브젝트가 문이면 문 팍 열기/닫기
-                // 오브젝트가 asmr이면 asmr 시작
                 // 현재 asmr 중이라면 asmr 중단
+                if (GameManager.Instance.Player.CurrentState == PlayerState.ASMR)
+                {
+                    Debug.Log("ASMR 중단");
+                    GameManager.Instance.EndASMR();
+                }
+                else
+                {
+                    Debug.Log("일반 상호작용");
+                    GameManager.Instance.Player.GetComponent<PlayerInteraction>().CurrentInteractable.Interact();
+                }
             }
-
             IsInteracting = false;
         }
     }
 
     public void OnASMR(InputAction.CallbackContext context)
     {
-        if (context.performed) OnASMRPerformed?.Invoke();
+        if (GameManager.Instance.Player.CurrentState == PlayerState.ASMR && context.performed) OnASMRPerformed?.Invoke();
     }
 
     public void OnFlashlight(InputAction.CallbackContext context)
     {
-        if(context.performed) OnFlashlightPerformed?.Invoke();
+        if (context.performed) OnFlashlightPerformed?.Invoke();
     }
 }

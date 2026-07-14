@@ -6,6 +6,7 @@
     Running,
     Crouching,
     Interacting,
+    ASMR,
     Exhaustion,
 }
 

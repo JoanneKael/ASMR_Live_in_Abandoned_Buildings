@@ -4,7 +4,7 @@ public class Player : MonoBehaviour
 {
     [Header("Player")]
     public PlayerState CurrentState { get; private set; }
-    private PlayerState lastState = PlayerState.None;
+    [SerializeField] private PlayerState lastState = PlayerState.None;
     [HideInInspector] public Rigidbody rb;
     private CapsuleCollider col;
     private PlayerStatus status;
@@ -36,6 +36,8 @@ public class Player : MonoBehaviour
 
     private void UpdatePlayerState()
     {
+        if (CurrentState == PlayerState.ASMR) return;
+
         if (status.IsExhauseted) CurrentState = PlayerState.Exhaustion;
         else if (InputManager.Instance.IsInteracting) CurrentState = PlayerState.Interacting;
         else if (InputManager.Instance.IsCrouching) CurrentState = PlayerState.Crouching;
@@ -68,5 +70,10 @@ public class Player : MonoBehaviour
             col.height = 2.0f;
             col.center = new Vector3(0f, 1f, 0f);
         }
+    }
+
+    public void ChangePlayerState(PlayerState state)
+    {
+        CurrentState = state;
     }
 }

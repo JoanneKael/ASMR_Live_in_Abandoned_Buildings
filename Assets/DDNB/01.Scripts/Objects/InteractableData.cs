@@ -9,7 +9,7 @@ public class InteractableData : ScriptableObject
     public string description;
 
     [Header("Capabilities")]
-    public bool isHoldable;
+    public bool isOpened;
     public bool isConsumable;
 
     [Header("Interaction Settings")]

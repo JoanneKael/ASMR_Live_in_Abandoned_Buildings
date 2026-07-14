@@ -5,7 +5,7 @@ public class PlayerInteraction : MonoBehaviour
 {
     [SerializeField] private float interactRange = 3.0f;
     [SerializeField] private LayerMask interactableLayer;
-    private IInteractable currentInteractable;
+    public IInteractable CurrentInteractable { get; private set; }
 
     private void Start()
     {
@@ -24,14 +24,14 @@ public class PlayerInteraction : MonoBehaviour
         {
             IInteractable hitInteractable = hit.collider.GetComponent<IInteractable>();
 
-            if (hitInteractable == currentInteractable) return;
+            if (hitInteractable == CurrentInteractable) return;
 
-            currentInteractable = hitInteractable;
-            Debug.Log($"currentInteractable : {currentInteractable.Data.itemName}");
+            CurrentInteractable = hitInteractable;
+            Debug.Log($"currentInteractable : {CurrentInteractable.Data.itemName}");
         }
         else
         {
-            if(currentInteractable != null) currentInteractable = null;
+            if(CurrentInteractable != null) CurrentInteractable = null;
         }
     }
 

@@ -1,21 +1,14 @@
-﻿using UnityEngine;
+﻿using System.Runtime.InteropServices.WindowsRuntime;
+using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    [Header("Ref")]
-    private Player player;
-
     [Header("Speed")]
     [SerializeField] private float runSpeed = 8f;
     [SerializeField] private float walkSpeed = 5f;
     [SerializeField] private float crouchSpeed = 2f;
     [SerializeField] private float interactSpeed = 0f;
     [SerializeField] private float exhaustionSpeed = 3f;
-
-    private void Awake()
-    {
-        player = GetComponent<Player>();
-    }
 
     void FixedUpdate()
     {
@@ -38,12 +31,12 @@ public class PlayerMovement : MonoBehaviour
 
         Vector3 moveDir = (camForward * moveInput.y + camRight * moveInput.x).normalized;
 
-        player.rb.linearVelocity = new Vector3(moveDir.x * currentSpeed, player.rb.linearVelocity.y, moveDir.z * currentSpeed);
+        GameManager.Instance.Player.rb.linearVelocity = new Vector3(moveDir.x * currentSpeed, GameManager.Instance.Player.rb.linearVelocity.y, moveDir.z * currentSpeed);
     }
 
     private float CurrentSpeed()
     {
-        switch (player.CurrentState)
+        switch (GameManager.Instance.Player.CurrentState)
         {
             case PlayerState.Walking:
                 return walkSpeed;
@@ -55,6 +48,8 @@ public class PlayerMovement : MonoBehaviour
                 return interactSpeed;
             case PlayerState.Exhaustion:
                 return exhaustionSpeed;
+            case PlayerState.ASMR:
+                return interactSpeed;
             default:
                 return walkSpeed;
         }

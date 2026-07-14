@@ -139,7 +139,7 @@
                     "name": "",
                     "id": "37ef12d6-2eb0-4c5f-9b69-371f676751b4",
                     "path": "<Keyboard>/e",
-                    "interactions": "Press(pressPoint=0.5),Hold(duration=0.3,pressPoint=0.5)",
+                    "interactions": "Hold(duration=0.3,pressPoint=0.5)",
                     "processors": "",
                     "groups": "",
                     "action": "Interaction",
