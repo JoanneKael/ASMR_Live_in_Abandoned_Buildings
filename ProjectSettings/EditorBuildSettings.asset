@@ -6,8 +6,14 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Main.unity
-    guid: 99c9720ab356a0642a771bea13969a05
+    path: Assets/Scenes/Title.unity
+    guid: b28ac5d12459e0b41b5ad3d68fb9f830
+  - enabled: 1
+    path: Assets/Scenes/Lobby.unity
+    guid: c043dc9149ffbea479342ea55fa6bd01
+  - enabled: 1
+    path: Assets/Scenes/Abandoned_House.unity
+    guid: 3961e71b600f54e4a96084dbfec26ad8
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 7672281fd134f8d42aad4c1041bef9d5, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
