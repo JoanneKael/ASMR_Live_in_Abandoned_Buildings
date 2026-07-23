@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: c4cdec6d9f97a814ca3af38a5d528d22
+timeCreated: 1512141123
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 210273
+  packageName: House- Furniture
+  packageVersion: 1.6
+  assetPath: Assets/HouseFurniture/Materials/House/MI_Metal_C.mat
+  uploadId: 925370

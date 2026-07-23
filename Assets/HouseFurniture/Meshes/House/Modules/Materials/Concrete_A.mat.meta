@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 892ec7b0391b5c141ba3f807a49b4ce3
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 210273
+  packageName: House- Furniture
+  packageVersion: 1.6
+  assetPath: Assets/HouseFurniture/Meshes/House/Modules/Materials/Concrete_A.mat
+  uploadId: 925370

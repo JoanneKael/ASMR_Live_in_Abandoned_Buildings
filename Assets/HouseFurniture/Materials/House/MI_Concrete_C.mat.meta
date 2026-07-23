@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 9e0ecbe839464d54480ace895219f391
+timeCreated: 1511451674
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 210273
+  packageName: House- Furniture
+  packageVersion: 1.6
+  assetPath: Assets/HouseFurniture/Materials/House/MI_Concrete_C.mat
+  uploadId: 925370

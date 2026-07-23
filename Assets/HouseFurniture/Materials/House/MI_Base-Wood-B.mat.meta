@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 258d6f54dbd005e4b9fc6d78a09b3fd1
+timeCreated: 1511451674
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 210273
+  packageName: House- Furniture
+  packageVersion: 1.6
+  assetPath: Assets/HouseFurniture/Materials/House/MI_Base-Wood-B.mat
+  uploadId: 925370
