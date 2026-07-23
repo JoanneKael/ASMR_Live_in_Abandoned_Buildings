@@ -1,4 +1,6 @@
-﻿public enum PlayerState
+﻿
+
+public enum PlayerState
 {
     None,
     Idle,
@@ -8,6 +10,7 @@
     Interacting,
     ASMR,
     Exhaustion,
+    Lobby,
 }
 
 public enum ObjectType
@@ -18,4 +21,13 @@ public enum ObjectType
     Consumable_HP,
     Consumable_SP,
     Key,
+    LobbyPC,
+
+}
+
+public enum GameDifficulty
+{
+    Easy,
+    Normal,
+    Hard
 }

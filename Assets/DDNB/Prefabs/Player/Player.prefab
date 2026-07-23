@@ -215,8 +215,8 @@ Light:
   serializedVersion: 13
   m_Type: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 10
-  m_Range: 3
+  m_Intensity: 5
+  m_Range: 5
   m_SpotAngle: 60
   m_InnerSpotAngle: 40
   m_CookieSize2D: {x: 0.5, y: 0.5}
@@ -328,7 +328,7 @@ GameObject:
   - component: {fileID: 2991915325164863288}
   m_Layer: 6
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -357,7 +357,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7528915884115935959}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 1dfac7b37e892ed479a81f0fd083341c, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -369,7 +369,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 0.3
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 1, z: 0}
@@ -412,6 +412,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ada0d5f2debfb854582a34ad2c33f9f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player
+  lastState: 0
   rb: {fileID: 0}
 --- !u!114 &3162913643783156898
 MonoBehaviour:
@@ -465,7 +466,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a820ae25342a51478e1ce1633af946d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInteraction
-  interactRange: 3
+  interactRange: 1
   interactableLayer:
     serializedVersion: 2
     m_Bits: 256
@@ -694,6 +695,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 1841c298173cdad4db8df8602c8f1c8d, type: 3}
       propertyPath: m_Layer
       value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 1841c298173cdad4db8df8602c8f1c8d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1262250383720426611, guid: 1841c298173cdad4db8df8602c8f1c8d, type: 3}
       propertyPath: m_Layer

@@ -12,7 +12,7 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        Move();
+        if(GameManager.Instance.Player != null) Move();
     }
 
     void Move()

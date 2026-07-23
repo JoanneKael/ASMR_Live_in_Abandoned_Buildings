@@ -36,7 +36,7 @@ public class Player : MonoBehaviour
 
     private void UpdatePlayerState()
     {
-        if (CurrentState == PlayerState.ASMR) return;
+        if (CurrentState == PlayerState.ASMR || CurrentState == PlayerState.Lobby) return;
 
         if (status.IsExhauseted) CurrentState = PlayerState.Exhaustion;
         else if (InputManager.Instance.IsInteracting) CurrentState = PlayerState.Interacting;

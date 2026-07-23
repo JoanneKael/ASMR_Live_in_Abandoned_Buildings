@@ -9,6 +9,10 @@ public class PlayerRotation : MonoBehaviour
 
     private void Update()
     {
+        if (GameManager.Instance.Player == null) return;
+
+        if (GameManager.Instance.Player.CurrentState == PlayerState.Interacting || GameManager.Instance.Player.CurrentState == PlayerState.Lobby) return;
+
         Vector2 mouseDelta = InputManager.Instance.MouseDelta;
         transform.Rotate(Vector3.up * mouseDelta.x * sensitivity * Time.deltaTime);
 

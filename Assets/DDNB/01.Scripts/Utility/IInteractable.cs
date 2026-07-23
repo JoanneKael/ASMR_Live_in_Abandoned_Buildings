@@ -15,5 +15,5 @@ public interface IInteractable
     /// <summary>
     /// 홀드 상호작용
     /// </summary>
-    void HoldInteract(float mouseDelta);
+    void HoldInteract();
 }

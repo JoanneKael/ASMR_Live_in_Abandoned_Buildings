@@ -1,16 +1,11 @@
 ﻿using UnityEngine;
 
-public class UI_Minigame : MonoBehaviour
+public class UI_Minigame : UI_Base
 {
     [SerializeField] private RectTransform barRect;
     [SerializeField] private RectTransform lineRect;
 
     [SerializeField] private float rotaionSpeed = 200f;
-
-    void Start()
-    {
-        gameObject.SetActive(false);
-    }
 
     public void SetBarRect()
     {

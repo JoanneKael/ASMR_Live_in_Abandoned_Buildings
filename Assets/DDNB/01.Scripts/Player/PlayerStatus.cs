@@ -29,10 +29,13 @@ public class PlayerStatus : MonoBehaviour
     private float lastHitTime = -10f;
     private float lastRunTime = -10f;
 
+    private UI_Status ui_status;
+
     private void Start()
     {
         currentHealth = maxHealth;
         currentStamina = maxStamina;
+        ui_status = UIManager.Instance.ShowUI<UI_Status>();
     }
 
     private void Update()
@@ -46,7 +49,7 @@ public class PlayerStatus : MonoBehaviour
         if (Time.time - lastHitTime > healthRecoveryTime && currentHealth < maxHealth)
         {
             currentHealth += Time.deltaTime * healthRecovery;
-            UIManager.Instance.UI_Status.RefreshHealthUI(currentHealth, maxHealth);
+            ui_status.RefreshHealthUI(currentHealth, maxHealth);
         }
     }
 
@@ -63,14 +66,14 @@ public class PlayerStatus : MonoBehaviour
                 StartCoroutine(IE_Exhaustion(exhaustionTime));
             }
 
-            UIManager.Instance.UI_Status.RefreshStaminaUI(currentStamina, maxStamina);
+            ui_status.RefreshStaminaUI(currentStamina, maxStamina);
         }
         else if (currentStamina < maxStamina)
         {
             if (Time.time - lastRunTime >= staminaRecoveryTime)
             {
                 currentStamina += Time.deltaTime * staminaRecovery;
-                UIManager.Instance.UI_Status.RefreshStaminaUI(currentStamina, maxStamina);
+                ui_status.RefreshStaminaUI(currentStamina, maxStamina);
             }
         }
     }
@@ -96,7 +99,7 @@ public class PlayerStatus : MonoBehaviour
             return;
         }
 
-        UIManager.Instance.UI_Status.RefreshHealthUI(currentHealth, maxHealth);
+        ui_status.RefreshHealthUI(currentHealth, maxHealth);
 
         lastHitTime = Time.time;
         StartCoroutine(IE_Invincible(invincibleTime));

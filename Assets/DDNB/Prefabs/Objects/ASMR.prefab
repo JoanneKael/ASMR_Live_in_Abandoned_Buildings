@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1857057439162803293}
   - component: {fileID: 5418320144419396595}
   - component: {fileID: 736850207308866826}
-  - component: {fileID: 5606334040805970130}
+  - component: {fileID: 6403044232685298224}
   m_Layer: 8
   m_Name: ASMR
   m_TagString: Untagged
@@ -113,7 +113,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &5606334040805970130
+--- !u!114 &6403044232685298224
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -122,7 +122,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1940499730514590584}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0af21b2edacaf5540afed6a9254358f4, type: 3}
+  m_Script: {fileID: 11500000, guid: 1666daaa7e0c9924b8631842a3acc926, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InteractableObject
+  m_EditorClassIdentifier: Assembly-CSharp::InteractableASMR
+  isASMRCompleted: 0
+  currentASMRProgress: 0
   data: {fileID: 11400000, guid: abd5239dff7d1d345a4675d488bc0b79, type: 2}
