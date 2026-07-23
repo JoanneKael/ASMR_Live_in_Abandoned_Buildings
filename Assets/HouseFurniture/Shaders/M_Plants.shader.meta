@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 32b6279c2a0f24643a57c0f9bac938c9
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures: []
+  nonModifiableTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 210273
+  packageName: House- Furniture
+  packageVersion: 1.6
+  assetPath: Assets/HouseFurniture/Shaders/M_Plants.shader
+  uploadId: 925370

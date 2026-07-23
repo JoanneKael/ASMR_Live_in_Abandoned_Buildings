@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 42f4ac0f2985baa40906490904f3cc49
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures: []
+  nonModifiableTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 210273
+  packageName: House- Furniture
+  packageVersion: 1.6
+  assetPath: Assets/HouseFurniture/Shaders/M_Wood.shader
+  uploadId: 925370

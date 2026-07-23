@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 02e72e21a9ab62048aa8ce3a11cafa43
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures: []
+  nonModifiableTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 210273
+  packageName: House- Furniture
+  packageVersion: 1.6
+  assetPath: Assets/HouseFurniture/Shaders/M_Master_Metallic.shader
+  uploadId: 925370

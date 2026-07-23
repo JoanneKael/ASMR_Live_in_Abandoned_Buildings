@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 5256301fc98b3384ab5999bfbcc4e8aa
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures: []
+  nonModifiableTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 210273
+  packageName: House- Furniture
+  packageVersion: 1.6
+  assetPath: Assets/HouseFurniture/Shaders/M_Glass.shader
+  uploadId: 925370

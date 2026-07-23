@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 9b009fbdb2530004db0da6b41e22738e
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures: []
+  nonModifiableTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 210273
+  packageName: House- Furniture
+  packageVersion: 1.6
+  assetPath: Assets/HouseFurniture/Shaders/M_Emissive.shader
+  uploadId: 925370

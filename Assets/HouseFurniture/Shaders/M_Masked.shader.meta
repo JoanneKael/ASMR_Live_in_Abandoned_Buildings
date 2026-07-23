@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: eddebdb9419557f4e94b7662b1d4c429
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures: []
+  nonModifiableTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 210273
+  packageName: House- Furniture
+  packageVersion: 1.6
+  assetPath: Assets/HouseFurniture/Shaders/M_Masked.shader
+  uploadId: 925370

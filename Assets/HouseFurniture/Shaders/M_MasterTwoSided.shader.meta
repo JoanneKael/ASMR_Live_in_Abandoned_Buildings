@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 793b3553e62426c469483cf9eabe2c94
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures: []
+  nonModifiableTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 210273
+  packageName: House- Furniture
+  packageVersion: 1.6
+  assetPath: Assets/HouseFurniture/Shaders/M_MasterTwoSided.shader
+  uploadId: 925370
