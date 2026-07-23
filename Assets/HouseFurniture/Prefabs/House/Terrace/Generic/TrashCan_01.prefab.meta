@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 18c4d6496aaba4246908fde31beeff31
+timeCreated: 1521033793
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 210273
+  packageName: House- Furniture
+  packageVersion: 1.6
+  assetPath: Assets/HouseFurniture/Prefabs/House/Terrace/Generic/TrashCan_01.prefab
+  uploadId: 925370

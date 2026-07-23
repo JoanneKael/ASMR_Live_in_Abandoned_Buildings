@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 7460159a0f5e64b4da9239e9053ecd9a
+timeCreated: 1511525245
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 210273
+  packageName: House- Furniture
+  packageVersion: 1.6
+  assetPath: Assets/HouseFurniture/Prefabs/House/Wall/Corners/Corner_Floor1_B1_Sym.prefab
+  uploadId: 925370

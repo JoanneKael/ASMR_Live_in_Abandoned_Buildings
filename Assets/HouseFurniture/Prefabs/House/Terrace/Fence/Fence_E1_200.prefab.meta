@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: f9c577fdd5f59534c9b1cdeb97e51970
+timeCreated: 1512843440
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 210273
+  packageName: House- Furniture
+  packageVersion: 1.6
+  assetPath: Assets/HouseFurniture/Prefabs/House/Terrace/Fence/Fence_E1_200.prefab
+  uploadId: 925370

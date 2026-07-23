@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 13061b91229e14b42a88513e6500163f
+timeCreated: 1512142087
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 210273
+  packageName: House- Furniture
+  packageVersion: 1.6
+  assetPath: Assets/HouseFurniture/Prefabs/House/Terrace/Fence/OutsideFence_A_800.prefab
+  uploadId: 925370
