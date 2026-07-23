@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: d58dbe1580f09e747b721aa678049f32
+timeCreated: 1511453546
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 210273
+  packageName: House- Furniture
+  packageVersion: 1.6
+  assetPath: Assets/HouseFurniture/Prefabs/House/Wall/Walls/Wall_Floor1_A_600.prefab
+  uploadId: 925370

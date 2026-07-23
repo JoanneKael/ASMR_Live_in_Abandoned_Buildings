@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 41cb3212829ca8e48ad29ee0438e838b
+timeCreated: 1512822883
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 210273
+  packageName: House- Furniture
+  packageVersion: 1.6
+  assetPath: Assets/HouseFurniture/Prefabs/House/Road/Left/Road_01_Left.prefab
+  uploadId: 925370

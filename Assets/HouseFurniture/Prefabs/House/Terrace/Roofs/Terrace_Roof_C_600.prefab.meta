@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 90f01a1ad0f7c0845b2a31e5cfb9e6c3
+timeCreated: 1514389873
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 210273
+  packageName: House- Furniture
+  packageVersion: 1.6
+  assetPath: Assets/HouseFurniture/Prefabs/House/Terrace/Roofs/Terrace_Roof_C_600.prefab
+  uploadId: 925370

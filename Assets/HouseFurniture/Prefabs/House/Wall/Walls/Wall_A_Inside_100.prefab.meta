@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 19e3c612367492548a4d1521d780af3b
+timeCreated: 1511455226
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 210273
+  packageName: House- Furniture
+  packageVersion: 1.6
+  assetPath: Assets/HouseFurniture/Prefabs/House/Wall/Walls/Wall_A_Inside_100.prefab
+  uploadId: 925370

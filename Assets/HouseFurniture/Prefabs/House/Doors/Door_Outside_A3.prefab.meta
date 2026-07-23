@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: f6703b5f43a68ff4c88fd3a294cfba4c
+timeCreated: 1515868644
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 210273
+  packageName: House- Furniture
+  packageVersion: 1.6
+  assetPath: Assets/HouseFurniture/Prefabs/House/Doors/Door_Outside_A3.prefab
+  uploadId: 925370

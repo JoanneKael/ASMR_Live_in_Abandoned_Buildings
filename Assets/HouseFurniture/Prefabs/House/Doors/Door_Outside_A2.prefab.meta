@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 4ffb04976fe95954f98502453515c093
+timeCreated: 1515868646
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 210273
+  packageName: House- Furniture
+  packageVersion: 1.6
+  assetPath: Assets/HouseFurniture/Prefabs/House/Doors/Door_Outside_A2.prefab
+  uploadId: 925370

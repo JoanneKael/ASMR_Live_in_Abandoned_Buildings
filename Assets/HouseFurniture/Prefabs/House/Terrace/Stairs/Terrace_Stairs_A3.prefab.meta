@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: a872decbf53cd264b81f0a4ca3194e0f
+timeCreated: 1513782096
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 210273
+  packageName: House- Furniture
+  packageVersion: 1.6
+  assetPath: Assets/HouseFurniture/Prefabs/House/Terrace/Stairs/Terrace_Stairs_A3.prefab
+  uploadId: 925370
