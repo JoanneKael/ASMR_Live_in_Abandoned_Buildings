@@ -1,7 +1,13 @@
-﻿using System.Collections;
+﻿using System;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AI;
 
+/// <summary>
+/// 유닛 AI 관리자.
+/// 상태(State)에 따라 커맨드를 생성·교체하고, CancellationToken으로 실행 중인 비동기 작업을 안전하게 중단합니다.
+/// </summary>
 [RequireComponent(typeof(NavMeshAgent))]
 public class UnitAI : MonoBehaviour
 {
@@ -11,22 +17,28 @@ public class UnitAI : MonoBehaviour
     [Header("Unit")]
     private NavMeshAgent agent;
     [SerializeField] private UnitState currentState;
-    private Coroutine currentCoroutine;
 
     [Header("Patrol")]
     private Vector3[] patrolPositions;
-    private int currentPatrolIndex;
-
-    [Header("Investigate")]
-    private Vector3 lastHeardPosition;
 
     [Header("Chase")]
     private Transform playerTransform;
-    private Vector3 investigatePosition;
+
+    // 커맨드 패턴 실행 컨텍스트 및 취소 토큰
+    private UnitAIContext _context;
+    private CancellationTokenSource _commandCts;
 
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
+        // OffMeshLink는 TraverseLinkCommand에서 수동 처리
+
+        _context = new UnitAIContext(agent, transform)
+        {
+            RequestStateChange = ChangeState,
+            IsPlayerInSight = IsPlayerInSight
+        };
+
         agent.autoTraverseOffMeshLink = false;
     }
 
@@ -34,12 +46,16 @@ public class UnitAI : MonoBehaviour
     {
         unitData = data;
         patrolPositions = points;
-        currentPatrolIndex = startPatrolIndex;
 
         if (GameManager.Instance != null && GameManager.Instance.Player != null)
         {
             playerTransform = GameManager.Instance.Player.transform;
         }
+
+        _context.UnitData = unitData;
+        _context.PlayerTransform = playerTransform;
+        _context.PatrolPositions = patrolPositions;
+        _context.CurrentPatrolIndex = startPatrolIndex;
 
         if (unitData.unitModelPrefab != null)
         {
@@ -55,180 +71,75 @@ public class UnitAI : MonoBehaviour
         CheckSensorySystem();
     }
 
+    private void OnDestroy()
+    {
+        CancelCurrentCommand();
+    }
+
+    /// <summary>
+    /// 상태를 변경하고 해당 상태의 커맨드를 비동기 실행합니다.
+    /// 기존 실행 중인 커맨드는 CancellationTokenSource.Cancel()로 즉시 중단됩니다.
+    /// </summary>
     private void ChangeState(UnitState newState)
     {
         if (currentState == newState) return;
 
         currentState = newState;
 
-        if (currentCoroutine != null) StopCoroutine(currentCoroutine);
+        CancelCurrentCommand();
+        _context.PlayerTransform = playerTransform;
 
-        switch (currentState)
-        {
-            case UnitState.Patrol:
-                currentCoroutine = StartCoroutine(IE_PatrolState());
-                break;
-            case UnitState.Investigate:
-                currentCoroutine = StartCoroutine(IE_InvestigateState());
-                break;
-            case UnitState.Chase:
-                currentCoroutine = StartCoroutine(IE_ChaseState());
-                break;
-            case UnitState.Attack:
-                currentCoroutine = StartCoroutine(IE_AttackState());
-                break;
-        }
+        _commandCts = new CancellationTokenSource();
+        IUnitCommand command = CreateCommandForState(newState);
+
+        RunCommandAsync(command, _commandCts.Token).Forget();
     }
 
-    #region Coroutines
-    // 1. 순찰 상태
-    private IEnumerator IE_PatrolState()
+    /// <summary>
+    /// 현재 상태에 맞는 커맨드 인스턴스를 생성합니다.
+    /// </summary>
+    private IUnitCommand CreateCommandForState(UnitState state)
     {
-        agent.speed = unitData.walkSpeed;
-        agent.isStopped = false;
-
-        while (true)
+        return state switch
         {
-            MoveToNextPatrolPoint();
-
-            Debug.Log("이동 시작!!");
-
-            while (agent.pathPending) yield return null;
-            while (agent.remainingDistance > 0.5f)
-            {
-                if (agent.isOnOffMeshLink)
-                {
-                    yield return StartCoroutine(IE_CheckAndTraverseLink());
-                }
-
-                yield return null;
-            }
-            Debug.Log("목적지 도착! 다음 패트롤 포인트로 이동 준비...");
-
-            yield return new WaitForSeconds(0.2f);
-        }
+            UnitState.Patrol => new PatrolCommand(_context),
+            UnitState.Investigate => new InvestigateCommand(_context),
+            UnitState.Chase => new ChaseCommand(_context),
+            UnitState.Attack => new AttackCommand(_context),
+            _ => new PatrolCommand(_context)
+        };
     }
 
-    // 2. 수색 상태 (소리 난 곳 조사)
-    private IEnumerator IE_InvestigateState()
+    /// <summary>
+    /// 커맨드를 비동기 실행합니다. 상태 전환 시 발생하는 OperationCanceledException은 정상 처리합니다.
+    /// </summary>
+    private async UniTaskVoid RunCommandAsync(IUnitCommand command, CancellationToken token)
     {
-        agent.speed = unitData.walkSpeed;
-        agent.isStopped = false;
-        agent.SetDestination(investigatePosition);
-
-        while (agent.pathPending) yield return null;
-        while (agent.remainingDistance > 0.5f)
+        try
         {
-            if (agent.isOnOffMeshLink)
-            {
-                yield return StartCoroutine(IE_CheckAndTraverseLink());
-            }
-
-            yield return null;
+            await command.ExecuteAsync(token);
         }
-
-        agent.isStopped = true;
-        yield return new WaitForSeconds(2.0f);
-
-        ChangeState(UnitState.Patrol);
+        catch (OperationCanceledException)
+        {
+            // ChangeState() 호출로 인한 정상적인 커맨드 중단
+        }
     }
 
-    // 3. 추적 상태
-    private IEnumerator IE_ChaseState()
+    /// <summary>
+    /// 실행 중인 커맨드의 CancellationTokenSource를 취소·해제합니다.
+    /// </summary>
+    private void CancelCurrentCommand()
     {
-        agent.speed = unitData.runSpeed; // 추적 속도로 변경
-        agent.isStopped = false;
+        if (_commandCts == null) return;
 
-        float lostTimer = 0f;          // 놓친 시간 카운트
-        float maxLostTime = 2.0f;       // 2초 동안 놓치면 추적 포기
-
-        while (true)
-        {
-            if (playerTransform == null)
-            {
-                Debug.LogWarning("Player Transform이 Null입니다. Patrol 상태로 복귀합니다.");
-                ChangeState(UnitState.Patrol);
-                yield break;
-            }
-
-            // 1. 플레이어가 시야에 있는지 검사
-            if (IsPlayerInSight())
-            {
-                // 보이면 타이머 리셋 & 플레이어 최신 위치로 목적지 갱신
-                lostTimer = 0f;
-                lastHeardPosition = playerTransform.position;
-
-                if (Vector3.Distance(agent.destination, playerTransform.position) > 0.3f)
-                {
-                    agent.SetDestination(playerTransform.position);
-                }
-            }
-            else
-            {
-                // 안 보이기 시작하면 타이머 가동
-                lostTimer += Time.deltaTime;
-
-                // 지정한 최대 놓침 시간을 초과하면 수색 상태로 전환
-                if (lostTimer >= maxLostTime)
-                {
-                    investigatePosition = lastHeardPosition;
-                    ChangeState(UnitState.Investigate);
-                    yield break;
-                }
-            }
-
-            // 2. 이동 중 계단/사다리(Link)를 만났다면 속도에 맞춰 자연스럽게 통과
-            if (agent.isOnOffMeshLink)
-            {
-                yield return StartCoroutine(IE_CheckAndTraverseLink());
-            }
-
-            // 3. 공격 범위 및 시야 조건 체크 (Null 체크가 이미 상단에서 완료되었으므로 안전!)
-            float distance = Vector3.Distance(transform.position, playerTransform.position);
-            float heightDiff = Mathf.Abs(transform.position.y - playerTransform.position.y);
-
-            if (distance <= 1.0f && heightDiff <= 0.8f && IsPlayerInSight())
-            {
-                ChangeState(UnitState.Attack);
-                yield break;
-            }
-
-            yield return null; // 다음 프레임 대기
-        }
+        _commandCts.Cancel();
+        _commandCts.Dispose();
+        _commandCts = null;
     }
 
-    // 4. 공격 상태
-    private IEnumerator IE_AttackState()
-    {
-        agent.isStopped = true;
-        Debug.Log("공격 시작!");
-
-        // 애니메이션 재생 시간 대기 등의 처리를 코루틴으로 직관적으로 작성 가능
-        yield return new WaitForSeconds(2.0f);
-
-        if (GameManager.Instance != null)
-        {
-            GameManager.Instance.Player.GetComponent<PlayerStatus>().TakeDamage(unitData.damage);
-        }
-
-        if (StageManager.Instance != null)
-        {
-            StageManager.Instance.OnUnitDespawned();
-        }
-
-        Destroy(gameObject);
-    }
-    #endregion
-
-    private void MoveToNextPatrolPoint()
-    {
-        if (patrolPositions == null || patrolPositions.Length == 0) return;
-
-        agent.SetDestination(patrolPositions[currentPatrolIndex]);
-
-        currentPatrolIndex = (currentPatrolIndex + 1) % patrolPositions.Length;
-    }
-
+    /// <summary>
+    /// 매 프레임 시야 감지를 수행합니다. 플레이어 발견 시 추적 상태로 전환합니다.
+    /// </summary>
     private void CheckSensorySystem()
     {
         if (playerTransform == null || currentState == UnitState.Attack) return;
@@ -236,54 +147,27 @@ public class UnitAI : MonoBehaviour
         if (IsPlayerInSight()) ChangeState(UnitState.Chase);
     }
 
+    /// <summary>
+    /// 거리, 시야각(FOV), 장애물 레이캐스트를 종합하여 플레이어 감지 여부를 판정합니다.
+    /// </summary>
     private bool IsPlayerInSight()
     {
-        if (playerTransform == null) return false;
+        if (playerTransform == null || unitData == null) return false;
 
-        // 1. 거리 체크
         float distance = Vector3.Distance(transform.position, playerTransform.position);
         if (distance > unitData.sightRange) return false;
 
-        // 2. 시야각(FOV) 체크
         Vector3 dirToPlayer = (playerTransform.position - transform.position).normalized;
         if (Vector3.Angle(transform.forward, dirToPlayer) > unitData.fovAngle / 2f) return false;
 
-        // 3. 눈높이 시선 레이캐스트 (장애물 여부)
-        // ※ transform.position 대신 눈높이(Eye Position) 지점을 사용하는 것이 중요합니다.
-        Vector3 eyePos = transform.position + Vector3.up * 1.5f; // 유닛 눈높이
-        Vector3 targetEyePos = playerTransform.position + Vector3.up * 1.5f; // 플레이어 눈높이
+        Vector3 eyePos = transform.position + Vector3.up;// * 1.5f;
+        Vector3 targetEyePos = playerTransform.position + Vector3.up;// * 1.5f;
 
         if (Physics.Linecast(eyePos, targetEyePos, LayerMask.GetMask("Obstacle", "Ground")))
         {
-            return false; // 시야 차단 장애물에 가려짐
+            return false;
         }
 
-        return true; // 감지 성공!
-    }
-
-    private IEnumerator IE_CheckAndTraverseLink()
-    {
-        if (!agent.isOnOffMeshLink) yield break;
-
-        OffMeshLinkData data = agent.currentOffMeshLinkData;
-        Vector3 startPos = transform.position;
-        Vector3 endPos = data.endPos + Vector3.up * agent.baseOffset;
-
-        // 실제 계단 거리 및 이동 시간 계산 (현재 설정된 agent.speed 기반)
-        float distance = Vector3.Distance(startPos, endPos);
-        float duration = (agent.speed > 0f) ? (distance / agent.speed) : 1f;
-        float timer = 0f;
-
-        while (timer < duration)
-        {
-            timer += Time.deltaTime;
-            transform.position = Vector3.Lerp(startPos, endPos, timer / duration);
-            yield return null;
-        }
-
-        // 이동 완료 후 위치 고정 및 Link 완료 신호
-        transform.position = endPos;
-        agent.Warp(endPos);
-        agent.CompleteOffMeshLink();
+        return true;
     }
 }

@@ -93,7 +93,7 @@ public class StageManager : MonoBehaviour
         {
             if (patrolAnchors[i] != null)
             {
-                Gizmos.DrawWireSphere(patrolAnchors[i].position, 0.5f);
+                Gizmos.DrawWireSphere(patrolAnchors[i].position, 1f);
             }
         }
     }
