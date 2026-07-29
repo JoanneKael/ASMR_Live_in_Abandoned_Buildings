@@ -12,6 +12,9 @@ public class StageData : ScriptableObject
     public int missionGold;         // 클리어에 필요한 미션 금액
 
     [Header("Description")]
-    [TextArea]
     public string description;      // 맵 설명
+
+    [Header("Unit Settings")]
+    public GameObject unitPrefab;   // 해당 스테이지에 등장할 유닛 프리팹
+    public UnitData unitData;     // 해당 유닛의 속성 데이터
 }

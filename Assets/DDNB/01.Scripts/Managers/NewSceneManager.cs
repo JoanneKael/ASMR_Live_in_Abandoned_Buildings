@@ -67,8 +67,7 @@ public class NewSceneManager : MonoBehaviour
 
         yield return null;
 
-        if(GameManager.Instance.Player == null) GameManager.Instance.GetPlayer();
-        GameManager.Instance.SetMissionGold();
+        GameManager.Instance.Init();
 
         ui.CloseUI();
 

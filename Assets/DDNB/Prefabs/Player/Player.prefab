@@ -99,14 +99,14 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.3
-  far clip plane: 10
+  far clip plane: 200
   field of view: 60.000004
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 311
+    m_Bits: 1847
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -197,13 +197,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4852565612873444807}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0.29999995}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6513767255907790533}
-  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!108 &3123898276419430039
 Light:
   m_ObjectHideFlags: 0
@@ -216,7 +216,7 @@ Light:
   m_Type: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 5
-  m_Range: 5
+  m_Range: 6
   m_SpotAngle: 60
   m_InnerSpotAngle: 40
   m_CookieSize2D: {x: 0.5, y: 0.5}
@@ -342,7 +342,7 @@ Transform:
   m_GameObject: {fileID: 7528915884115935959}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 2}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -370,9 +370,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.3
-  m_Height: 2
+  m_Height: 1
   m_Direction: 1
-  m_Center: {x: 0, y: 1, z: 0}
+  m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!54 &4382597684839562704
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -413,7 +413,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player
   lastState: 0
-  rb: {fileID: 0}
 --- !u!114 &3162913643783156898
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -449,11 +448,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6e1441debe6f61449e2c6ab73559dfb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player
-  runSpeed: 8
-  walkSpeed: 5
-  crouchSpeed: 2
+  runSpeed: 5
+  walkSpeed: 2.5
+  crouchSpeed: 1
   interactSpeed: 0
-  exhaustionSpeed: 3
+  exhaustionSpeed: 1
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  rayDistance: 1.2
+  snapForce: 15
+  maxStepHeight: 0.4
 --- !u!114 &3494238176716140242
 MonoBehaviour:
   m_ObjectHideFlags: 0

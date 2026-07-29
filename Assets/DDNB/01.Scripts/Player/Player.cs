@@ -5,7 +5,6 @@ public class Player : MonoBehaviour
     [Header("Player")]
     public PlayerState CurrentState { get; private set; }
     [SerializeField] private PlayerState lastState = PlayerState.None;
-    [HideInInspector] public Rigidbody rb;
     private CapsuleCollider col;
     private PlayerStatus status;
 
@@ -14,8 +13,6 @@ public class Player : MonoBehaviour
 
     void Awake()
     {
-        rb = GetComponent<Rigidbody>();
-        rb.freezeRotation = true;
         col = GetComponent<CapsuleCollider>();
         status = GetComponent<PlayerStatus>();
         cameraRig = transform.GetChild(0);

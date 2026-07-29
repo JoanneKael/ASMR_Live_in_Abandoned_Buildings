@@ -14,9 +14,9 @@ TagManager:
   - Player
   - Camera
   - Interactable
-  - 
-  - 
-  - 
+  - Ground
+  - Obstacle
+  - Stair
   - 
   - 
   - 
