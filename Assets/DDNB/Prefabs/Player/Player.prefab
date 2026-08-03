@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 3096571862415257728}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.5, z: 0}
+  m_LocalPosition: {x: 0, y: 1.2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -106,7 +106,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 1847
+    m_Bits: 7991
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -357,7 +357,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7528915884115935959}
-  m_Material: {fileID: 13400000, guid: 1dfac7b37e892ed479a81f0fd083341c, type: 2}
+  m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -370,7 +370,7 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.25
-  m_Height: 1
+  m_Height: 1.4
   m_Direction: 1
   m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!54 &4382597684839562704
@@ -448,17 +448,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6e1441debe6f61449e2c6ab73559dfb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player
-  runSpeed: 5
-  walkSpeed: 2.5
+  runSpeed: 4.5
+  walkSpeed: 2
   crouchSpeed: 1
   interactSpeed: 0
   exhaustionSpeed: 1
   groundLayer:
     serializedVersion: 2
-    m_Bits: 0
-  rayDistance: 1.2
-  snapForce: 15
-  maxStepHeight: 0.4
+    m_Bits: 512
+  groundProbeExtra: 0.35
+  groundSnapOffset: 0.02
+  slopeSlideLimit: 50
 --- !u!114 &3494238176716140242
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -475,6 +475,7 @@ MonoBehaviour:
   interactableLayer:
     serializedVersion: 2
     m_Bits: 256
+  holdThreshold: 0.3
 --- !u!114 &2991915325164863288
 MonoBehaviour:
   m_ObjectHideFlags: 0

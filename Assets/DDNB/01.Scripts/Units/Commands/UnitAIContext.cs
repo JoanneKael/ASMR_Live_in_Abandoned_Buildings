@@ -18,6 +18,9 @@ public class UnitAIContext
 
     public int CurrentPatrolIndex { get; set; }
 
+    /// <summary>패트롤 진행 방향 (1: 0→끝, -1: 끝→0)</summary>
+    public int PatrolDirection { get; set; } = 1;
+
     /// <summary>수색 목표 지점 (추격 실패 시 마지막으로 본 위치)</summary>
     public Vector3 InvestigatePosition { get; set; }
 
@@ -37,9 +40,8 @@ public class UnitAIContext
     }
 
     /// <summary>
-    /// 다음 순찰 지점으로 NavMesh 목적지를 설정하고 인덱스를 순환합니다.
+    /// 다음 순찰 지점으로 이동. 0→마지막→0 왕복(핑퐁)합니다.
     /// </summary>
-    /// <returns>설정된 목적지 좌표 (도착 판정·링크 복원에 사용)</returns>
     public Vector3 MoveToNextPatrolPoint()
     {
         if (PatrolPositions == null || PatrolPositions.Length == 0)
@@ -49,7 +51,19 @@ public class UnitAIContext
 
         Vector3 target = PatrolPositions[CurrentPatrolIndex];
         Agent.SetDestination(target);
-        CurrentPatrolIndex = (CurrentPatrolIndex + 1) % PatrolPositions.Length;
+
+        if (PatrolPositions.Length == 1)
+            return target;
+
+        int next = CurrentPatrolIndex + PatrolDirection;
+        if (next >= PatrolPositions.Length || next < 0)
+        {
+            PatrolDirection *= -1;
+            next = CurrentPatrolIndex + PatrolDirection;
+            next = Mathf.Clamp(next, 0, PatrolPositions.Length - 1);
+        }
+
+        CurrentPatrolIndex = next;
         return target;
     }
 }

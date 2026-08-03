@@ -8,7 +8,7 @@ public class ASMRManager : MonoBehaviour
 
     [Header("ASMR")]
     private Coroutine asmrCoroutine;
-    InteractableObject _target;
+    InteractableASMR _target;
     [SerializeField] private float fillDuration = 30f;
 
     [Header("Minigame")]
@@ -24,7 +24,7 @@ public class ASMRManager : MonoBehaviour
         Instance = this;
     }
 
-    public void StartASMR(InteractableObject target)
+    public void StartASMR(InteractableASMR target)
     {
         if (target.isASMRCompleted)
         {
@@ -51,7 +51,7 @@ public class ASMRManager : MonoBehaviour
         _target = null;
     }
 
-    private IEnumerator IE_ASMR(InteractableObject target)
+    private IEnumerator IE_ASMR(InteractableASMR target)
     {
         _target = target;
 
@@ -163,7 +163,13 @@ public class ASMRManager : MonoBehaviour
         // ASMR 중단
         EndASMR();
 
-        // 노이즈 감지 반응
-        GameManager.Instance.OnNoiseDetected();
+        // 소음 이벤트 (전역 쿨다운 무시)
+        if (NoiseManager.Instance != null && GameManager.Instance.Player != null)
+        {
+            NoiseManager.Instance.ReportNoise(
+                NoiseSource.ASMRFail,
+                GameManager.Instance.Player.transform.position,
+                bypassCooldown: true);
+        }
     }
 }

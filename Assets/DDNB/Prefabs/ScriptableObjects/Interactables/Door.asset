@@ -10,14 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 04cee822eff2fb842a6770999315f337, type: 3}
-  m_Name: Door_A
+  m_Name: Door
   m_EditorClassIdentifier: Assembly-CSharp::InteractableData
-  itemName: Door_A
+  itemName: Door
   objectType: 1
   description: 
-  isOpened: 0
   isConsumable: 0
-  interactionDistance: 1
-  animationName: 
   interactionSoundName: 
-  icon: {fileID: 0}

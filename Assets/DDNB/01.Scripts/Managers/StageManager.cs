@@ -8,74 +8,93 @@ public class StageManager : MonoBehaviour
     [Header("Stage Data Asset")]
     [SerializeField] private StageData stageData;
 
-    [Header("Scene Patrol Anchors")]
+    [Header("Spawn Anchors")]
+    [SerializeField] private Transform[] spawnAnchors;
+
+    [Header("Patrol Anchors")]
     [SerializeField] private Transform[] patrolAnchors;
 
+    private Vector3[] spawnPositions;
     private Vector3[] patrolPositions;
+
     private UnitAI currentUnitAI;
+
+    public UnitAI CurrentUnitAI => currentUnitAI;
 
     private void Awake()
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
 
-        // 씬 시작 시 Transform 위치들을 Vector3 배열로 변환
-        InitPatrolPositions();
+        InitAnchorPositions();
     }
 
     private void Start()
     {
-
         StartCoroutine(IE_GhostSpawnLoop());
     }
 
-    private void InitPatrolPositions()
+    private void InitAnchorPositions()
     {
-        if (patrolAnchors != null && patrolAnchors.Length > 0)
+        spawnPositions = ToPositionArray(spawnAnchors);
+        patrolPositions = ToPositionArray(patrolAnchors);
+    }
+
+    private static Vector3[] ToPositionArray(Transform[] anchors)
+    {
+        if (anchors == null || anchors.Length == 0) return null;
+
+        Vector3[] positions = new Vector3[anchors.Length];
+        for (int i = 0; i < anchors.Length; i++)
         {
-            patrolPositions = new Vector3[patrolAnchors.Length];
-            for (int i = 0; i < patrolAnchors.Length; i++)
-            {
-                patrolPositions[i] = patrolAnchors[i].position;
-            }
+            if (anchors[i] != null)
+                positions[i] = anchors[i].position;
         }
+        return positions;
     }
 
     #region UnitSpawn
     private IEnumerator IE_GhostSpawnLoop()
     {
-        // 1. 인게임 진입 후 첫 스폰까지 30초 대기
         yield return new WaitForSeconds(10);
-
         SpawnUnit();
     }
 
     private void SpawnUnit()
     {
-        if (patrolPositions == null || patrolPositions.Length == 0)
+        if (spawnPositions == null || spawnPositions.Length == 0)
         {
-            Debug.LogError("[GameManager] 패트롤 포인트가 설정되지 않았습니다!");
+            Debug.LogError("[StageManager] 스폰 포인트가 설정되지 않았습니다!");
             return;
         }
 
-        // 1. 랜덤 패트롤 포인트 인덱스 뽑기
-        int randomIndex = Random.Range(0, patrolPositions.Length);
-        Vector3 spawnPos = patrolPositions[randomIndex];
+        if (patrolPositions == null || patrolPositions.Length == 0)
+        {
+            Debug.LogError("[StageManager] 패트롤 포인트가 설정되지 않았습니다!");
+            return;
+        }
 
-        // 2. 해당 패트롤 포인트 위치에 유닛UI 생성
+        int randomIndex = Random.Range(0, spawnPositions.Length);
+        Vector3 spawnPos = spawnPositions[randomIndex];
+
         GameObject unitObj = Instantiate(stageData.unitPrefab, spawnPos, Quaternion.identity);
         currentUnitAI = unitObj.GetComponent<UnitAI>();
 
-        // 3. GhostAI 컴포넌트에 정보 전달하여 초기화 (뽑힌 패트롤 지점부터 순회 시작)
         if (currentUnitAI != null)
-        {
-            currentUnitAI.InitUnit(stageData.unitData, patrolPositions, randomIndex);
-        }
+            currentUnitAI.InitUnit(stageData.unitData, patrolPositions);
     }
 
     public void OnUnitDespawned()
     {
+        currentUnitAI = null;
         StartCoroutine(IE_RespawnTimer());
+    }
+
+    /// <summary>소음 발생 위치를 현재 유닛에게 전달</summary>
+    public void NotifyUnitHeardNoise(Vector3 worldPosition)
+    {
+        if (currentUnitAI == null) return;
+        currentUnitAI.HearNoise(worldPosition);
     }
 
     private IEnumerator IE_RespawnTimer()
@@ -87,13 +106,25 @@ public class StageManager : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if (patrolAnchors == null) return;
-        Gizmos.color = Color.cyan;
-        for (int i = 0; i < patrolAnchors.Length; i++)
+        if (spawnAnchors != null)
         {
-            if (patrolAnchors[i] != null)
+            Gizmos.color = Color.cyan;
+            for (int i = 0; i < spawnAnchors.Length; i++)
             {
-                Gizmos.DrawWireSphere(patrolAnchors[i].position, 1f);
+                if (spawnAnchors[i] != null)
+                    Gizmos.DrawWireSphere(spawnAnchors[i].position, 1f);
+            }
+        }
+
+        if (patrolAnchors != null)
+        {
+            Gizmos.color = Color.yellow;
+            for (int i = 0; i < patrolAnchors.Length; i++)
+            {
+                if (patrolAnchors[i] == null) continue;
+                Gizmos.DrawWireSphere(patrolAnchors[i].position, 0.6f);
+                if (i + 1 < patrolAnchors.Length && patrolAnchors[i + 1] != null)
+                    Gizmos.DrawLine(patrolAnchors[i].position, patrolAnchors[i + 1].position);
             }
         }
     }

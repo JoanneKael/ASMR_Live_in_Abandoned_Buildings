@@ -9,13 +9,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4944602716190327285}
+  - component: {fileID: 905590953034847103}
   m_Layer: 5
   m_Name: UI_Clock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4944602716190327285
 RectTransform:
   m_ObjectHideFlags: 0
@@ -36,6 +37,19 @@ RectTransform:
   m_AnchoredPosition: {x: 170, y: -45}
   m_SizeDelta: {x: 140, y: 60}
   m_Pivot: {x: 0, y: 1}
+--- !u!114 &905590953034847103
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6932544420980847984}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17e97e3cf5b1006449d73a2c7c21cc4c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UI_IngameClock
+  timeText: {fileID: 2515486384630869429}
 --- !u!1 &8142709733930441758
 GameObject:
   m_ObjectHideFlags: 0

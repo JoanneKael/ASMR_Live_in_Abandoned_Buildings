@@ -1,32 +1,23 @@
 ﻿using UnityEngine;
+
 public abstract class InteractableObject : MonoBehaviour, IInteractable
 {
-    [Header("ASMR")]
-    public bool isASMRCompleted = false;
-    public float currentASMRProgress = 0f;
-
     [Header("InteractableData")]
     public InteractableData data;
 
-    public InteractableData Data => data;
+    [Header("Input")]
+    [SerializeField] protected InteractInputMode inputMode = InteractInputMode.Tap;
 
-    public virtual void HoldInteract(){}
+    public InteractableData Data => data;
+    public InteractInputMode InputMode => inputMode;
 
     public abstract void Interact();
 
-    private void RapidDoorControl()
-    {
-        if (data.isOpened)
-        {
-            Debug.Log("문 닫힘!!");
-            data.isOpened = false;
-        }
-        else
-        {
-            Debug.Log("문 열림!!");
-            data.isOpened = true;
-        }
+    public virtual void BeginHold() { }
 
-        Debug.Log("@@@@@ 소음 발생 @@@@@");
-    }
+    public virtual void TickHold(Vector2 lookDelta) { }
+
+    public virtual void EndHold(bool wasHeld) { }
+
+    public virtual void CancelHold() { }
 }

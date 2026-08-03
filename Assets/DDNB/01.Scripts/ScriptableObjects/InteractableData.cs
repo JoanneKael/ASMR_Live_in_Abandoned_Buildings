@@ -9,12 +9,8 @@ public class InteractableData : ScriptableObject
     public string description;
 
     [Header("Capabilities")]
-    public bool isOpened;
     public bool isConsumable;
 
-    [Header("Interaction Settings")]
-    public string animationName;
-
-    [Header("Visual & Audio")]
+    [Header("Audio")]
     public string interactionSoundName;
 }

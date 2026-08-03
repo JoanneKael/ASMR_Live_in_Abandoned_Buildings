@@ -619,6 +619,7 @@ GameObject:
   - component: {fileID: 1399551672595910318}
   - component: {fileID: 7353245815364495833}
   - component: {fileID: 5788800921359290398}
+  - component: {fileID: 3158644092608182277}
   m_Layer: 5
   m_Name: GameStart
   m_TagString: Untagged
@@ -728,6 +729,22 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &3158644092608182277
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4099616958486412403}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6485492c679ff4b4b91169f41d7208fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIButtonTween
+  hoverScale: 1.08
+  clickScale: 0.92
+  tweenDuration: 0.1
+  clickPunchDuration: 0.08
 --- !u!1 &4205537020861095301
 GameObject:
   m_ObjectHideFlags: 0
@@ -815,6 +832,7 @@ GameObject:
   - component: {fileID: 3569683928882132946}
   - component: {fileID: 3443147128174579593}
   - component: {fileID: 2134850188065402375}
+  - component: {fileID: 5529942564692397876}
   m_Layer: 5
   m_Name: Quit
   m_TagString: Untagged
@@ -924,6 +942,22 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &5529942564692397876
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5744972428274595802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6485492c679ff4b4b91169f41d7208fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIButtonTween
+  hoverScale: 1.08
+  clickScale: 0.92
+  tweenDuration: 0.1
+  clickPunchDuration: 0.08
 --- !u!1 &6733394618233218952
 GameObject:
   m_ObjectHideFlags: 0
@@ -992,6 +1026,7 @@ GameObject:
   - component: {fileID: 1842594500744917472}
   - component: {fileID: 3608503739432781231}
   - component: {fileID: 3237806360726952399}
+  - component: {fileID: 5069737968185297682}
   m_Layer: 5
   m_Name: Setting
   m_TagString: Untagged
@@ -1101,6 +1136,22 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &5069737968185297682
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6747188169754366021}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6485492c679ff4b4b91169f41d7208fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIButtonTween
+  hoverScale: 1.08
+  clickScale: 0.92
+  tweenDuration: 0.1
+  clickPunchDuration: 0.08
 --- !u!1 &7426093491475679814
 GameObject:
   m_ObjectHideFlags: 0

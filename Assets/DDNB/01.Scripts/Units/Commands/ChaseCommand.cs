@@ -13,7 +13,7 @@ public class ChaseCommand : IUnitCommand
 
     private const float MaxLostTime = 2.0f;
     private const float DestinationUpdateThreshold = 0.3f;
-    private const float AttackDistance = 1.5f;
+    private const float AttackDistance = 2f;
     private const float AttackHeightDiff = 0.8f;
 
     public ChaseCommand(UnitAIContext context)
@@ -61,6 +61,9 @@ public class ChaseCommand : IUnitCommand
                     return;
                 }
             }
+
+            // 이동 중 닫힌 문 열기
+            UnitMovementHelper.TryOpenNearbyDoors(_context);
 
             // 이동 중 OffMeshLink(계단) 통과 — 현재 추격 목적지를 저장해 링크 후 경로 복원
             if (_context.Agent.isOnOffMeshLink)

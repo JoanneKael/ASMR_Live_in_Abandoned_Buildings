@@ -1,6 +1,7 @@
-using System;
+﻿using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using UnityEngine;
 
 /// <summary>
 /// 수색 상태 커맨드.
@@ -22,12 +23,13 @@ public class InvestigateCommand : IUnitCommand
         Vector3 investigateTarget = _context.InvestigatePosition;
         _context.Agent.SetDestination(investigateTarget);
 
-        await UnitMovementHelper.MoveToDestinationAsync(_context, investigateTarget, 0.5f, token);
+        await UnitMovementHelper.MoveToDestinationAsync(_context, investigateTarget, 1f, token);
 
         _context.Agent.isStopped = true;
 
         // 목적지 도착 후 주변 관찰 대기
         await UniTask.Delay(TimeSpan.FromSeconds(2.0f), cancellationToken: token);
+
 
         _context.RequestStateChange?.Invoke(UnitState.Patrol);
     }

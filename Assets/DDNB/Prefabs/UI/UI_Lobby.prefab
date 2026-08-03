@@ -225,6 +225,7 @@ GameObject:
   - component: {fileID: 6676028396122842489}
   - component: {fileID: 4211979025331652945}
   - component: {fileID: 7648018476145713432}
+  - component: {fileID: 5032166135127623766}
   m_Layer: 0
   m_Name: Button_L
   m_TagString: Untagged
@@ -334,6 +335,22 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &5032166135127623766
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1320961790062978958}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6485492c679ff4b4b91169f41d7208fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIButtonTween
+  hoverScale: 1.08
+  clickScale: 0.92
+  tweenDuration: 0.1
+  clickPunchDuration: 0.08
 --- !u!1 &2091512287874722031
 GameObject:
   m_ObjectHideFlags: 0
@@ -865,6 +882,7 @@ GameObject:
   - component: {fileID: 453269720469581411}
   - component: {fileID: 7173778783466090450}
   - component: {fileID: 4690237445052745964}
+  - component: {fileID: 1352633872753886719}
   m_Layer: 0
   m_Name: Button_R
   m_TagString: Untagged
@@ -974,6 +992,22 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1352633872753886719
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4904871353736421301}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6485492c679ff4b4b91169f41d7208fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIButtonTween
+  hoverScale: 1.08
+  clickScale: 0.92
+  tweenDuration: 0.1
+  clickPunchDuration: 0.08
 --- !u!1 &4975227290853056798
 GameObject:
   m_ObjectHideFlags: 0
@@ -986,6 +1020,7 @@ GameObject:
   - component: {fileID: 3470108938806338171}
   - component: {fileID: 9178526029335903638}
   - component: {fileID: 5082799699858538421}
+  - component: {fileID: 103904288938037230}
   m_Layer: 0
   m_Name: Button_R
   m_TagString: Untagged
@@ -1095,6 +1130,22 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &103904288938037230
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4975227290853056798}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6485492c679ff4b4b91169f41d7208fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIButtonTween
+  hoverScale: 1.08
+  clickScale: 0.92
+  tweenDuration: 0.1
+  clickPunchDuration: 0.08
 --- !u!1 &5320098323771548074
 GameObject:
   m_ObjectHideFlags: 0
@@ -1381,6 +1432,7 @@ GameObject:
   - component: {fileID: 3279325259933363454}
   - component: {fileID: 3556037273842725070}
   - component: {fileID: 7695850542240487984}
+  - component: {fileID: 7678237352939745432}
   m_Layer: 0
   m_Name: Cancel
   m_TagString: Untagged
@@ -1490,6 +1542,22 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &7678237352939745432
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5855167402926858485}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6485492c679ff4b4b91169f41d7208fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIButtonTween
+  hoverScale: 1.08
+  clickScale: 0.92
+  tweenDuration: 0.1
+  clickPunchDuration: 0.08
 --- !u!1 &6123585262211309022
 GameObject:
   m_ObjectHideFlags: 0
@@ -1913,6 +1981,7 @@ GameObject:
   - component: {fileID: 7870011701227573583}
   - component: {fileID: 2018450065766217858}
   - component: {fileID: 3211509388049838641}
+  - component: {fileID: 6303948215961242237}
   m_Layer: 0
   m_Name: Button_L
   m_TagString: Untagged
@@ -2022,6 +2091,22 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &6303948215961242237
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6867399753139425352}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6485492c679ff4b4b91169f41d7208fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIButtonTween
+  hoverScale: 1.08
+  clickScale: 0.92
+  tweenDuration: 0.1
+  clickPunchDuration: 0.08
 --- !u!1 &6939696293403961953
 GameObject:
   m_ObjectHideFlags: 0
@@ -2246,6 +2331,7 @@ GameObject:
   - component: {fileID: 3634925561453181065}
   - component: {fileID: 3070230859067792341}
   - component: {fileID: 3002965761136212991}
+  - component: {fileID: 3685113189867772550}
   m_Layer: 0
   m_Name: Confirm
   m_TagString: Untagged
@@ -2355,6 +2441,22 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &3685113189867772550
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8172370798757879877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6485492c679ff4b4b91169f41d7208fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIButtonTween
+  hoverScale: 1.08
+  clickScale: 0.92
+  tweenDuration: 0.1
+  clickPunchDuration: 0.08
 --- !u!1 &8242983202305903107
 GameObject:
   m_ObjectHideFlags: 0

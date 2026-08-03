@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UnitData
   unitModelPrefab: {fileID: 919132149155446097, guid: 1841c298173cdad4db8df8602c8f1c8d, type: 3}
   walkSpeed: 2
-  runSpeed: 4.5
-  sightRange: 10
-  hearingRange: 15
+  runSpeed: 4
+  sightRange: 5
+  hearingRange: 10
   fovAngle: 90
-  damage: 10
+  maxSightHeightDiff: 2
+  damage: 20

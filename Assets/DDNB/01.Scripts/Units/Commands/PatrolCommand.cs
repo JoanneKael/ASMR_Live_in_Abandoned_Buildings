@@ -1,6 +1,7 @@
-using System;
+﻿using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using UnityEngine;
 
 /// <summary>
 /// 순찰 상태 커맨드.

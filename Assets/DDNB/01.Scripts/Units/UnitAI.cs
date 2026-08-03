@@ -42,10 +42,10 @@ public class UnitAI : MonoBehaviour
         agent.autoTraverseOffMeshLink = false;
     }
 
-    public void InitUnit(UnitData data, Vector3[] points, int startPatrolIndex)
+    public void InitUnit(UnitData data, Vector3[] patrolPoints)
     {
         unitData = data;
-        patrolPositions = points;
+        patrolPositions = patrolPoints;
 
         if (GameManager.Instance != null && GameManager.Instance.Player != null)
         {
@@ -55,7 +55,8 @@ public class UnitAI : MonoBehaviour
         _context.UnitData = unitData;
         _context.PlayerTransform = playerTransform;
         _context.PatrolPositions = patrolPositions;
-        _context.CurrentPatrolIndex = startPatrolIndex;
+        _context.CurrentPatrolIndex = 0;
+        _context.PatrolDirection = 1;
 
         if (unitData.unitModelPrefab != null)
         {
@@ -138,35 +139,92 @@ public class UnitAI : MonoBehaviour
     }
 
     /// <summary>
+    /// 소음을 듣고 해당 위치로 수색합니다. 추적/공격 중에는 무시합니다.
+    /// </summary>
+    public void HearNoise(Vector3 noisePos)
+    {
+        if (currentState == UnitState.Attack || currentState == UnitState.Chase) return;
+
+        _context.InvestigatePosition = noisePos;
+        _context.LastHeardPosition = noisePos;
+
+        if (currentState == UnitState.Investigate)
+        {
+            // 이미 수색 중이면 목적지만 갱신하고 커맨드 재시작
+            CancelCurrentCommand();
+            _commandCts = new CancellationTokenSource();
+            RunCommandAsync(new InvestigateCommand(_context), _commandCts.Token).Forget();
+            return;
+        }
+
+        ChangeState(UnitState.Investigate);
+    }
+
+    /// <summary>
+    /// 플레이어가 숨으면 Chase 중일 때 Investigate(위치 B)로 전환합니다.
+    /// </summary>
+    public void OnPlayerHidden(Vector3 investigatePos)
+    {
+        if (currentState != UnitState.Chase) return;
+
+        _context.InvestigatePosition = investigatePos;
+        _context.LastHeardPosition = investigatePos;
+        ChangeState(UnitState.Investigate);
+    }
+
+    /// <summary>
     /// 매 프레임 시야 감지를 수행합니다. 플레이어 발견 시 추적 상태로 전환합니다.
     /// </summary>
     private void CheckSensorySystem()
     {
         if (playerTransform == null || currentState == UnitState.Attack) return;
+        if (GameManager.Instance != null
+            && GameManager.Instance.Player != null
+            && GameManager.Instance.Player.CurrentState == PlayerState.Hidden)
+            return;
 
         if (IsPlayerInSight()) ChangeState(UnitState.Chase);
     }
 
     /// <summary>
     /// 거리, 시야각(FOV), 장애물 레이캐스트를 종합하여 플레이어 감지 여부를 판정합니다.
+    /// 수평 거리 + 높이 차로 층을 가르고, Obstacle만 가림으로 취급합니다.
     /// </summary>
     private bool IsPlayerInSight()
     {
         if (playerTransform == null || unitData == null) return false;
-
-        float distance = Vector3.Distance(transform.position, playerTransform.position);
-        if (distance > unitData.sightRange) return false;
-
-        Vector3 dirToPlayer = (playerTransform.position - transform.position).normalized;
-        if (Vector3.Angle(transform.forward, dirToPlayer) > unitData.fovAngle / 2f) return false;
-
-        Vector3 eyePos = transform.position + Vector3.up;// * 1.5f;
-        Vector3 targetEyePos = playerTransform.position + Vector3.up;// * 1.5f;
-
-        if (Physics.Linecast(eyePos, targetEyePos, LayerMask.GetMask("Obstacle", "Ground")))
-        {
+        if (GameManager.Instance != null
+            && GameManager.Instance.Player != null
+            && GameManager.Instance.Player.CurrentState == PlayerState.Hidden)
             return false;
+
+        Vector3 unitPos = transform.position;
+        Vector3 playerPos = playerTransform.position;
+
+        // 다른 층(높이 차) 제외
+        if (Mathf.Abs(playerPos.y - unitPos.y) > unitData.maxSightHeightDiff) return false;
+
+        // 수평 거리
+        Vector3 flat = playerPos - unitPos;
+        flat.y = 0f;
+        float flatDistance = flat.magnitude;
+        if (flatDistance > unitData.sightRange) return false;
+
+        // FOV (수평 방향 기준)
+        if (flatDistance > 0.001f)
+        {
+            Vector3 flatForward = transform.forward;
+            flatForward.y = 0f;
+            flatForward.Normalize();
+            if (Vector3.Angle(flatForward, flat.normalized) > unitData.fovAngle / 2f) return false;
         }
+
+        Vector3 eyePos = unitPos + Vector3.up * 1.0f;
+        Vector3 targetEyePos = playerPos + Vector3.up * 1.0f;
+
+        // Ground는 제외 — 바닥 스침으로 시야가 막히지 않게 함
+        if (Physics.Linecast(eyePos, targetEyePos, LayerMask.GetMask("Obstacle")))
+            return false;
 
         return true;
     }

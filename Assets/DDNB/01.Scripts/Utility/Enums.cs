@@ -11,6 +11,7 @@ public enum PlayerState
     ASMR,
     Exhaustion,
     Lobby,
+    Hidden,
 }
 
 public enum ObjectType
@@ -22,6 +23,8 @@ public enum ObjectType
     Consumable_SP,
     Key,
     LobbyPC,
+    Hide,
+
 
 }
 
@@ -39,4 +42,19 @@ public enum UnitState
     Investigate,// 수색 (소리 들은 곳 확인)
     Chase,      // 추적 (플레이어 발견 및 달리기)
     Attack      // 공격 (잡기/잡기 애니메이션 실행)
+}
+
+public enum InteractInputMode
+{
+    Tap,        // 누르면 즉시 Interact
+    Hold,       // 길게 누르면 진행, 짧게 떼면 취소
+    TapAndDrag  // 짧음=Interact, 김=드래그(TickHold)
+}
+
+public enum NoiseSource
+{
+    Microphone, // 마이크 비명
+    Running,    // 달리기
+    DoorTap,    // 문 탭 개폐 (드래그 제외)
+    ASMRFail    // ASMR 미니게임 실패
 }
