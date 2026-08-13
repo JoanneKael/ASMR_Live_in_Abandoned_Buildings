@@ -12,6 +12,7 @@ public enum PlayerState
     Exhaustion,
     Lobby,
     Hidden,
+    Stunned,
 }
 
 public enum ObjectType

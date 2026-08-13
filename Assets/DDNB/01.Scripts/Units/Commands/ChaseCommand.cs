@@ -3,18 +3,19 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 /// <summary>
-/// 추적 상태 커맨드.
-/// 플레이어를 runSpeed로 추격하며, 시야에서 사라지면 lostTimer를 누적합니다.
-/// maxLostTime 초과 시 마지막 목격 위치로 수색 상태로 전환합니다.
+/// 추적 상태 커맨드 (리썰/패니코어식).
+/// 플레이어·마지막 목격 위치로 경로만 계속 갱신하며 달리고,
+/// 문은 멈추지 않고 통과형으로 엽니다.
 /// </summary>
 public class ChaseCommand : IUnitCommand
 {
     private readonly UnitAIContext _context;
 
     private const float MaxLostTime = 2.0f;
-    private const float DestinationUpdateThreshold = 0.3f;
-    private const float AttackDistance = 2f;
+    private const float AttackDistance = 1.4f;
     private const float AttackHeightDiff = 0.8f;
+    private const float RepathInterval = 0.12f;
+    private const float PredictSeconds = 0.15f;
 
     public ChaseCommand(UnitAIContext context)
     {
@@ -25,12 +26,16 @@ public class ChaseCommand : IUnitCommand
     {
         _context.Agent.speed = _context.UnitData.runSpeed;
         _context.Agent.isStopped = false;
+        _context.Agent.autoBraking = false;
+        _context.Agent.stoppingDistance = 0.8f;
+        _context.IsLocomotionLocked = false;
 
         float lostTimer = 0f;
+        float repathTimer = 0f;
+        Rigidbody playerRb = null;
 
         while (!token.IsCancellationRequested)
         {
-            // 플레이어 참조 소실 시 순찰로 복귀
             if (_context.PlayerTransform == null)
             {
                 Debug.LogWarning("Player Transform이 Null입니다. Patrol 상태로 복귀합니다.");
@@ -38,21 +43,22 @@ public class ChaseCommand : IUnitCommand
                 return;
             }
 
-            if (_context.IsPlayerInSight())
-            {
-                // 시야 내: 타이머 리셋 및 목적지 갱신
-                lostTimer = 0f;
-                _context.LastHeardPosition = _context.PlayerTransform.position;
+            if (playerRb == null)
+                playerRb = _context.PlayerTransform.GetComponent<Rigidbody>();
 
-                if (Vector3.Distance(_context.Agent.destination, _context.PlayerTransform.position) > DestinationUpdateThreshold)
-                {
-                    _context.Agent.SetDestination(_context.PlayerTransform.position);
-                }
+            bool inSight = _context.IsPlayerInSight != null && _context.IsPlayerInSight();
+            Vector3 chaseTarget;
+
+            if (inSight)
+            {
+                lostTimer = 0f;
+                chaseTarget = PredictPlayerPosition(playerRb);
+                _context.LastHeardPosition = _context.PlayerTransform.position;
             }
             else
             {
-                // 시야 이탈: 타이머 누적 후 수색 전환
                 lostTimer += Time.deltaTime;
+                chaseTarget = _context.LastHeardPosition;
 
                 if (lostTimer >= MaxLostTime)
                 {
@@ -62,24 +68,27 @@ public class ChaseCommand : IUnitCommand
                 }
             }
 
-            // 이동 중 닫힌 문 열기
-            UnitMovementHelper.TryOpenNearbyDoors(_context);
+            // 경로만 짧은 간격으로 갱신 — 멈추지 않음
+            repathTimer += Time.deltaTime;
+            if (repathTimer >= RepathInterval || !_context.Agent.hasPath)
+            {
+                repathTimer = 0f;
+                _context.Agent.SetDestination(chaseTarget);
+            }
 
-            // 이동 중 OffMeshLink(계단) 통과 — 현재 추격 목적지를 저장해 링크 후 경로 복원
+            // 통과형 문 개방 (하드스톱 없음)
+            UnitMovementHelper.TryOpenNearbyDoors(_context);
+            UnitMovementHelper.ClearBlockingDoorToward(_context, chaseTarget);
+
             if (_context.Agent.isOnOffMeshLink)
             {
-                Vector3 chaseTarget = _context.IsPlayerInSight()
-                    ? _context.PlayerTransform.position
-                    : _context.Agent.destination;
-
                 await new TraverseLinkCommand(_context, chaseTarget).ExecuteAsync(token);
             }
 
-            // 공격 범위 및 시야 조건 충족 시 공격 상태로 전환
             float distance = Vector3.Distance(_context.Transform.position, _context.PlayerTransform.position);
             float heightDiff = Mathf.Abs(_context.Transform.position.y - _context.PlayerTransform.position.y);
 
-            if (distance <= AttackDistance && heightDiff <= AttackHeightDiff && _context.IsPlayerInSight())
+            if (distance <= AttackDistance && heightDiff <= AttackHeightDiff && inSight)
             {
                 _context.RequestStateChange?.Invoke(UnitState.Attack);
                 return;
@@ -87,5 +96,15 @@ public class ChaseCommand : IUnitCommand
 
             await UniTask.Yield(PlayerLoopTiming.Update, token);
         }
+    }
+
+    private Vector3 PredictPlayerPosition(Rigidbody playerRb)
+    {
+        Vector3 pos = _context.PlayerTransform.position;
+        if (playerRb == null) return pos;
+
+        Vector3 vel = playerRb.linearVelocity;
+        vel.y = 0f;
+        return pos + vel * PredictSeconds;
     }
 }

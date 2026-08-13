@@ -4,7 +4,7 @@ using UnityEngine;
 
 /// <summary>
 /// NavMesh OffMeshLink(가파른 계단·사다리)를 현재 agent.speed에 맞춰 Lerp 보간으로 통과합니다.
-/// 링크는 경로 위의 중간 구간이므로, 통과 후 원래 목적지로 SetDestination하여 경로를 복원합니다.
+/// Patrol/Investigate(walk) · Chase(run) 등 현재 속도에 맞는 이동 애니를 유지합니다.
 /// </summary>
 public class TraverseLinkCommand : IUnitCommand
 {
@@ -25,32 +25,61 @@ public class TraverseLinkCommand : IUnitCommand
         Vector3 startPos = _context.Transform.position;
         Vector3 endPos = data.endPos + Vector3.up * _context.Agent.baseOffset;
 
-        // 현재 속도 기준으로 이동 시간 계산
         float distance = Vector3.Distance(startPos, endPos);
-        float duration = _context.Agent.speed > 0f ? distance / _context.Agent.speed : 1f;
+        float moveSpeed = Mathf.Max(0.01f, _context.Agent.speed);
+        float duration = distance / moveSpeed;
         float timer = 0f;
 
-        while (timer < duration)
-        {
-            token.ThrowIfCancellationRequested();
+        // 링크 중에는 agent.velocity=0 → Idle이 되지 않도록 현재 상태 속도(walk/run)로 강제
+        _context.AnimatorPlayer?.StopScan();
+        _context.ForcedLocomotionSpeed = moveSpeed;
 
-            timer += Time.deltaTime;
-            _context.Transform.position = Vector3.Lerp(startPos, endPos, timer / duration);
-            await UniTask.Yield(PlayerLoopTiming.Update, token);
+        bool prevUpdateRotation = _context.Agent.updateRotation;
+        _context.Agent.updateRotation = false;
+
+        Vector3 moveDir = endPos - startPos;
+        moveDir.y = 0f;
+        if (moveDir.sqrMagnitude > 0.0001f)
+            _context.Transform.rotation = Quaternion.LookRotation(moveDir.normalized, Vector3.up);
+
+        try
+        {
+            while (timer < duration)
+            {
+                token.ThrowIfCancellationRequested();
+
+                timer += Time.deltaTime;
+                float t = Mathf.Clamp01(timer / duration);
+                _context.Transform.position = Vector3.Lerp(startPos, endPos, t);
+
+                // UnitAI.Update와 별도로도 매 프레임 보강 (실행 순서 무관하게 유지)
+                if (_context.UnitData != null)
+                {
+                    _context.AnimatorPlayer?.UpdateLocomotion(
+                        moveSpeed,
+                        _context.UnitData.walkSpeed,
+                        _context.UnitData.runSpeed);
+                }
+
+                await UniTask.Yield(PlayerLoopTiming.Update, token);
+            }
+
+            _context.Transform.position = endPos;
+            _context.Agent.Warp(endPos);
+            _context.Agent.CompleteOffMeshLink();
+
+            _context.Agent.isStopped = false;
+            _context.Agent.SetDestination(_restoreDestination);
+
+            while (_context.Agent.pathPending)
+            {
+                await UniTask.Yield(PlayerLoopTiming.Update, token);
+            }
         }
-
-        // 링크 종료 지점에 스냅 후 NavMesh에 완료 신호
-        _context.Transform.position = endPos;
-        _context.Agent.Warp(endPos);
-        _context.Agent.CompleteOffMeshLink();
-
-        // 링크 통과 후 원래 목적지(B)로 경로 복원 — 링크는 중간 구간일 뿐 최종 목적지는 유지
-        _context.Agent.isStopped = false;
-        _context.Agent.SetDestination(_restoreDestination);
-
-        while (_context.Agent.pathPending)
+        finally
         {
-            await UniTask.Yield(PlayerLoopTiming.Update, token);
+            _context.ForcedLocomotionSpeed = null;
+            _context.Agent.updateRotation = prevUpdateRotation;
         }
     }
 }

@@ -4,58 +4,46 @@ using UnityEngine;
 public class PlayerStatus : MonoBehaviour
 {
     [Header("Status")]
-    [SerializeField] private float currentHealth;
     [SerializeField] private float currentStamina;
-    [SerializeField] private bool isInvincible = false;
     [SerializeField] private bool canRun = true;
 
     public bool IsExhauseted => !canRun;
 
     [Header("Timer Settings")]
-    [SerializeField] private float invincibleTime = 3f;
     [SerializeField] private float exhaustionTime = 3f;
 
     [Header("Recovery Settings")]
-    [SerializeField] private float healthRecovery = 5f;
-    [SerializeField] private float healthRecoveryTime = 6f;
     [SerializeField] private float staminaRecovery = 5f;
     [SerializeField] private float staminaRecoveryTime = 3f;
-
     [SerializeField] private float staminaReduction = 20f;
 
-    private float maxHealth = 100;
     private float maxStamina = 100;
-
-    private float lastHitTime = -10f;
     private float lastRunTime = -10f;
 
     private UI_Status ui_status;
 
     private void Start()
     {
-        currentHealth = maxHealth;
         currentStamina = maxStamina;
         ui_status = UIManager.Instance.ShowUI<UI_Status>();
+        if (ui_status != null)
+            ui_status.RefreshStaminaUI(currentStamina, maxStamina);
     }
 
     private void Update()
     {
-        HandleHealth();
         HandleStamina();
-    }
-
-    private void HandleHealth()
-    {
-        if (Time.time - lastHitTime > healthRecoveryTime && currentHealth < maxHealth)
-        {
-            currentHealth += Time.deltaTime * healthRecovery;
-            ui_status.RefreshHealthUI(currentHealth, maxHealth);
-        }
     }
 
     private void HandleStamina()
     {
-        if (InputManager.Instance.IsRunning && canRun)
+        Player player = GameManager.Instance != null ? GameManager.Instance.Player : null;
+        bool blockRunInput = player != null
+            && (player.CurrentState == PlayerState.Hidden
+                || player.CurrentState == PlayerState.Stunned
+                || player.IsHideTransitioning);
+
+        if (!blockRunInput && InputManager.Instance.IsRunning && canRun)
         {
             currentStamina -= Time.deltaTime * staminaReduction;
             lastRunTime = Time.time;
@@ -85,30 +73,18 @@ public class PlayerStatus : MonoBehaviour
         canRun = true;
     }
 
-    public void TakeDamage(int amount)
+    /// <summary>새 하루 시작 시 스태미나 회복</summary>
+    public void ResetStatus()
     {
-        if (isInvincible) return;
+        StopAllCoroutines();
+        canRun = true;
+        currentStamina = maxStamina;
+        lastRunTime = -10f;
 
-        currentHealth -= amount;
+        if (ui_status == null && UIManager.Instance != null)
+            ui_status = UIManager.Instance.ShowUI<UI_Status>();
 
-        if (currentHealth <= 0)
-        {
-            currentHealth = 0f;
-
-            Debug.Log($"GameOver");
-            return;
-        }
-
-        ui_status.RefreshHealthUI(currentHealth, maxHealth);
-
-        lastHitTime = Time.time;
-        StartCoroutine(IE_Invincible(invincibleTime));
-    }
-
-    private IEnumerator IE_Invincible(float delay)
-    {
-        isInvincible = true;
-        yield return new WaitForSeconds(delay);
-        isInvincible = false;
+        if (ui_status != null)
+            ui_status.RefreshStaminaUI(currentStamina, maxStamina);
     }
 }

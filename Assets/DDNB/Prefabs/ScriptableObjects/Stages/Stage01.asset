@@ -13,9 +13,14 @@ MonoBehaviour:
   m_Name: Stage01
   m_EditorClassIdentifier: Assembly-CSharp::StageData
   stageID: stage_01
-  mapName: Abandoned House
+  mapName: "\uD3D0\uAC00"
   sceneName: Abandoned_House
-  missionGold: 1000
+  missionGoldEasy: 3000
+  missionGoldNormal: 6000
+  missionGoldHard: 10000
+  maxStunnedEasy: 3
+  maxStunnedNormal: 2
+  maxStunnedHard: 1
   description: "\uD3D0\uAC00. \uB0B4\uBD80\uB294 \uC0DD\uAC01\uBCF4\uB2E4 \uAE68\uB057\uD574. "
   unitPrefab: {fileID: 4099965918968704295, guid: 133f9d062564d7843a59bbfde6317275, type: 3}
   unitData: {fileID: 11400000, guid: 8bc04dd8a4b40be4984fbe2faeaffd0d, type: 2}

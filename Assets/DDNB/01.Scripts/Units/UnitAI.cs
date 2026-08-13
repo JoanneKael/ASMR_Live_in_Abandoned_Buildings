@@ -17,12 +17,29 @@ public class UnitAI : MonoBehaviour
     [Header("Unit")]
     private NavMeshAgent agent;
     [SerializeField] private UnitState currentState;
+    public UnitState CurrentState => currentState;
+
+    /// <summary>OffMeshLink 등 velocity=0일 때 애니/발소리용 강제 속도</summary>
+    public float? ForcedLocomotionSpeed => _context != null ? _context.ForcedLocomotionSpeed : null;
 
     [Header("Patrol")]
     private Vector3[] patrolPositions;
+    private Vector3[] patrolForwards;
+
+    [Header("NavMesh Clearance")]
+    [Tooltip("Bake Agent Radius와 같게 유지 (문 통과). 키우면 좁은 문을 못 지남.")]
+    [SerializeField] private float agentClearanceRadius = 0.1f;
+
+    [Tooltip("NavMesh 가장자리(벽)에서 이 거리보다 가까우면 안쪽으로 살짝 밀어냄. radius와 별개.")]
+    [SerializeField] private float wallEdgeClearance = 0.2f;
+
+    [Tooltip("벽 가장자리 밀어내기 세기")]
+    [SerializeField] private float wallPushStrength = 2.2f;
 
     [Header("Chase")]
     private Transform playerTransform;
+
+    private UnitAnimatorPlayer animatorPlayer;
 
     // 커맨드 패턴 실행 컨텍스트 및 취소 토큰
     private UnitAIContext _context;
@@ -33,43 +50,175 @@ public class UnitAI : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         // OffMeshLink는 TraverseLinkCommand에서 수동 처리
 
+        animatorPlayer = GetComponent<UnitAnimatorPlayer>();
+        if (animatorPlayer == null)
+            animatorPlayer = gameObject.AddComponent<UnitAnimatorPlayer>();
+
+        if (GetComponent<UnitAudio>() == null)
+            gameObject.AddComponent<UnitAudio>();
+
         _context = new UnitAIContext(agent, transform)
         {
             RequestStateChange = ChangeState,
-            IsPlayerInSight = IsPlayerInSight
+            IsPlayerInSight = IsPlayerInSight,
+            AnimatorPlayer = animatorPlayer
         };
 
         agent.autoTraverseOffMeshLink = false;
+        ConfigureAgentMovement();
     }
 
-    public void InitUnit(UnitData data, Vector3[] patrolPoints)
+    /// <summary>
+    /// radius는 bake(문폭)와 맞추고, 벽 여유는 edge push로 처리합니다.
+    /// </summary>
+    private void ConfigureAgentMovement()
+    {
+        // 문 통과용 — bake Agent Radius(~0.2)와 동일하게
+        agent.radius = Mathf.Clamp(agentClearanceRadius, 0.15f, 0.25f);
+
+        // 리썰/패니코어식: 중간 가속·회전으로 붙는 느낌
+        agent.angularSpeed = 220f;
+        agent.acceleration = 16f;
+        agent.stoppingDistance = 0.8f;
+        agent.autoBraking = false;
+        agent.obstacleAvoidanceType = ObstacleAvoidanceType.HighQualityObstacleAvoidance;
+    }
+
+    public void InitUnit(UnitData data, Transform[] patrolAnchors)
     {
         unitData = data;
-        patrolPositions = patrolPoints;
+        BuildPatrolArrays(patrolAnchors);
 
         if (GameManager.Instance != null && GameManager.Instance.Player != null)
         {
             playerTransform = GameManager.Instance.Player.transform;
         }
 
+        ConfigureAgentMovement();
+
         _context.UnitData = unitData;
         _context.PlayerTransform = playerTransform;
         _context.PatrolPositions = patrolPositions;
+        _context.PatrolForwards = patrolForwards;
         _context.CurrentPatrolIndex = 0;
         _context.PatrolDirection = 1;
+        _context.AnimatorPlayer = animatorPlayer;
+        _context.IsLocomotionLocked = false;
 
         if (unitData.unitModelPrefab != null)
         {
             var unit = Instantiate(unitData.unitModelPrefab, transform);
             unit.transform.localPosition = new Vector3(0f, -1f, 0f);
+            animatorPlayer.BindFromModel(unit, unitData.animatorOverride);
+        }
+        else
+        {
+            Debug.LogWarning("[UnitAI] UnitData.unitModelPrefab이 비어 있습니다.");
         }
 
         ChangeState(UnitState.Patrol);
     }
 
+    private void BuildPatrolArrays(Transform[] anchors)
+    {
+        if (anchors == null || anchors.Length == 0)
+        {
+            patrolPositions = null;
+            patrolForwards = null;
+            return;
+        }
+
+        patrolPositions = new Vector3[anchors.Length];
+        patrolForwards = new Vector3[anchors.Length];
+
+        for (int i = 0; i < anchors.Length; i++)
+        {
+            if (anchors[i] == null)
+            {
+                patrolPositions[i] = Vector3.zero;
+                patrolForwards[i] = Vector3.forward;
+                continue;
+            }
+
+            patrolPositions[i] = anchors[i].position;
+            Vector3 fwd = anchors[i].forward;
+            fwd.y = 0f;
+            patrolForwards[i] = fwd.sqrMagnitude > 0.0001f ? fwd.normalized : Vector3.forward;
+        }
+    }
+
     private void Update()
     {
         CheckSensorySystem();
+        UpdateAnimatorLocomotion();
+    }
+
+    private void LateUpdate()
+    {
+        // Agent가 속도를 잡은 뒤, 벽(NavMesh edge)에서만 살짝 밀어 자연스러운 여유
+        ApplyWallEdgeClearance();
+    }
+
+    /// <summary>
+    /// radius를 키우지 않고, 가장자리에 붙었을 때만 통로 안쪽으로 속도를 보정해
+    /// 문폭은 유지하면서 벽 클리핑을 줄입니다.
+    /// </summary>
+    private void ApplyWallEdgeClearance()
+    {
+        if (agent == null || !agent.enabled || !agent.isOnNavMesh) return;
+        if (agent.isStopped) return;
+        if (currentState == UnitState.Attack) return;
+        if (_context != null && _context.IsLocomotionLocked) return;
+        if (wallEdgeClearance <= 0.01f || wallPushStrength <= 0f) return;
+
+        if (!NavMesh.FindClosestEdge(agent.nextPosition, out NavMeshHit edge, NavMesh.AllAreas))
+            return;
+
+        if (edge.distance >= wallEdgeClearance) return;
+
+        // normal은 내비 가능 영역 안쪽을 가리킴 → 벽에서 멀어지는 방향
+        Vector3 push = edge.normal;
+        push.y = 0f;
+        if (push.sqrMagnitude < 0.0001f) return;
+        push.Normalize();
+
+        float t = 1f - Mathf.Clamp01(edge.distance / wallEdgeClearance);
+        t *= t; // 가까울수록 더 세게
+
+        Vector3 v = agent.velocity;
+        v += push * (wallPushStrength * t);
+
+        float maxSpeed = Mathf.Max(agent.speed, 0.01f);
+        if (v.sqrMagnitude > maxSpeed * maxSpeed)
+            v = v.normalized * maxSpeed;
+
+        agent.velocity = v;
+    }
+
+    private void UpdateAnimatorLocomotion()
+    {
+        if (animatorPlayer == null || !animatorPlayer.IsBound || unitData == null) return;
+        if (currentState == UnitState.Attack) return;
+        if (_context != null && _context.IsLocomotionLocked) return;
+
+        float horizontalSpeed;
+        if (_context != null && _context.ForcedLocomotionSpeed.HasValue)
+        {
+            horizontalSpeed = _context.ForcedLocomotionSpeed.Value;
+        }
+        else
+        {
+            Vector3 v = agent.velocity;
+            v.y = 0f;
+            horizontalSpeed = v.magnitude;
+
+            // Investigate / Patrol 스캔 정지 중에는 Speed로 Scan을 덮지 않음
+            if (agent.isStopped && horizontalSpeed < 0.05f
+                && (currentState == UnitState.Investigate || currentState == UnitState.Patrol))
+                return;
+        }
+
+        animatorPlayer.UpdateLocomotion(horizontalSpeed, unitData.walkSpeed, unitData.runSpeed);
     }
 
     private void OnDestroy()
@@ -84,6 +233,13 @@ public class UnitAI : MonoBehaviour
     private void ChangeState(UnitState newState)
     {
         if (currentState == newState) return;
+
+        if (currentState == UnitState.Investigate || currentState == UnitState.Patrol)
+        {
+            animatorPlayer?.StopScan();
+            if (_context != null)
+                _context.IsLocomotionLocked = false;
+        }
 
         currentState = newState;
 

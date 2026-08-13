@@ -481,6 +481,10 @@ PrefabInstance:
       value: OMG it's scary :c
       objectReference: {fileID: 0}
     - target: {fileID: 5533271433888007560, guid: 0283389f563866f4582ef145ea725091, type: 3}
+      propertyPath: m_Maskable
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5533271433888007560, guid: 0283389f563866f4582ef145ea725091, type: 3}
       propertyPath: m_fontStyle
       value: 1
       objectReference: {fileID: 0}
@@ -495,6 +499,10 @@ PrefabInstance:
     - target: {fileID: 5533271433888007560, guid: 0283389f563866f4582ef145ea725091, type: 3}
       propertyPath: m_fontColor.r
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5533271433888007560, guid: 0283389f563866f4582ef145ea725091, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5533271433888007560, guid: 0283389f563866f4582ef145ea725091, type: 3}
       propertyPath: m_fontColor32.rgba
@@ -607,6 +615,10 @@ PrefabInstance:
       value: OMG it's scary :c
       objectReference: {fileID: 0}
     - target: {fileID: 5533271433888007560, guid: 0283389f563866f4582ef145ea725091, type: 3}
+      propertyPath: m_Maskable
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5533271433888007560, guid: 0283389f563866f4582ef145ea725091, type: 3}
       propertyPath: m_fontStyle
       value: 1
       objectReference: {fileID: 0}
@@ -621,6 +633,10 @@ PrefabInstance:
     - target: {fileID: 5533271433888007560, guid: 0283389f563866f4582ef145ea725091, type: 3}
       propertyPath: m_fontColor.r
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5533271433888007560, guid: 0283389f563866f4582ef145ea725091, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5533271433888007560, guid: 0283389f563866f4582ef145ea725091, type: 3}
       propertyPath: m_fontColor32.rgba
@@ -733,6 +749,10 @@ PrefabInstance:
       value: OMG it's scary :c
       objectReference: {fileID: 0}
     - target: {fileID: 5533271433888007560, guid: 0283389f563866f4582ef145ea725091, type: 3}
+      propertyPath: m_Maskable
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5533271433888007560, guid: 0283389f563866f4582ef145ea725091, type: 3}
       propertyPath: m_fontStyle
       value: 1
       objectReference: {fileID: 0}
@@ -747,6 +767,10 @@ PrefabInstance:
     - target: {fileID: 5533271433888007560, guid: 0283389f563866f4582ef145ea725091, type: 3}
       propertyPath: m_fontColor.r
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5533271433888007560, guid: 0283389f563866f4582ef145ea725091, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5533271433888007560, guid: 0283389f563866f4582ef145ea725091, type: 3}
       propertyPath: m_fontColor32.rgba
@@ -859,6 +883,10 @@ PrefabInstance:
       value: OMG it's scary :c
       objectReference: {fileID: 0}
     - target: {fileID: 5533271433888007560, guid: 0283389f563866f4582ef145ea725091, type: 3}
+      propertyPath: m_Maskable
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5533271433888007560, guid: 0283389f563866f4582ef145ea725091, type: 3}
       propertyPath: m_fontStyle
       value: 1
       objectReference: {fileID: 0}
@@ -873,6 +901,10 @@ PrefabInstance:
     - target: {fileID: 5533271433888007560, guid: 0283389f563866f4582ef145ea725091, type: 3}
       propertyPath: m_fontColor.r
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5533271433888007560, guid: 0283389f563866f4582ef145ea725091, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5533271433888007560, guid: 0283389f563866f4582ef145ea725091, type: 3}
       propertyPath: m_fontColor32.rgba

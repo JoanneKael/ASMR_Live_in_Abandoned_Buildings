@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public class PlayerInteraction : MonoBehaviour
 {
@@ -10,6 +10,10 @@ public class PlayerInteraction : MonoBehaviour
 
     /// <summary>홀드/드래그 입력 진행 중인지</summary>
     public bool IsHoldingInteraction { get; private set; }
+
+    /// <summary>ExitDoor 홀드 상호작용 중 — 크로스헤어 숨김용</summary>
+    public bool IsHidingCrosshairForInteraction =>
+        IsHoldingInteraction && activeInteractable is InteractableExitDoor;
 
     private float pressStartTime;
     private bool holdBegun;
@@ -27,11 +31,11 @@ public class PlayerInteraction : MonoBehaviour
         if (InputManager.Instance == null) return;
         InputManager.Instance.OnInteractStarted -= HandleInteractStarted;
         InputManager.Instance.OnInteractCanceled -= HandleInteractCanceled;
+        SetCurrentInteractable(null);
     }
 
     private void Start()
     {
-        // Awake 순서에 따라 OnEnable에서 구독 실패했을 수 있음
         if (InputManager.Instance == null) return;
         InputManager.Instance.OnInteractStarted -= HandleInteractStarted;
         InputManager.Instance.OnInteractCanceled -= HandleInteractCanceled;
@@ -44,12 +48,21 @@ public class PlayerInteraction : MonoBehaviour
         if (GameManager.Instance.Player == null) return;
 
         PlayerState state = GameManager.Instance.Player.CurrentState;
+        if (GameManager.Instance.Player.IsHideTransitioning) return;
+        if (state == PlayerState.Stunned) return;
+        if (InputManager.Instance != null && InputManager.Instance.IsGameplayInputBlocked) return;
+
         if (state != PlayerState.Interacting
             && state != PlayerState.ASMR
             && state != PlayerState.Lobby
             && state != PlayerState.Hidden)
         {
             CheckInteractable();
+        }
+        else if (state == PlayerState.ASMR || state == PlayerState.Lobby)
+        {
+            // ASMR/로비 중에는 포커스 해제
+            SetCurrentInteractable(null);
         }
 
         if (!IsHoldingInteraction || activeInteractable == null) return;
@@ -69,13 +82,15 @@ public class PlayerInteraction : MonoBehaviour
         Player player = GameManager.Instance.Player;
         if (player == null) return;
 
+        if (player.IsHideTransitioning) return;
+        if (player.CurrentState == PlayerState.Stunned) return;
+
         if (player.CurrentState == PlayerState.ASMR)
         {
             ASMRManager.Instance.EndASMR();
             return;
         }
 
-        // 숨은 상태: E로 은신처에서 탈출
         if (player.CurrentState == PlayerState.Hidden)
         {
             player.ActiveHideSpot?.Interact();
@@ -83,6 +98,17 @@ public class PlayerInteraction : MonoBehaviour
         }
 
         if (CurrentInteractable == null) return;
+
+        // 완료된 ASMR은 상호작용 불가 (툴팁만 표시)
+        if (CurrentInteractable is InteractableASMR asmr && asmr.isASMRCompleted)
+            return;
+
+        // 탈출문: 로비 미준비 / 인게임 미션 미달성이면 홀드 시작하지 않음
+        if (CurrentInteractable is InteractableExitDoor
+            && !UI_Crosshair.CanUseExitDoorIcon())
+        {
+            return;
+        }
 
         activeInteractable = CurrentInteractable;
         pressStartTime = Time.time;
@@ -136,9 +162,6 @@ public class PlayerInteraction : MonoBehaviour
         ClearHoldState();
     }
 
-    /// <summary>
-    /// 외부(씬 이동 완료 등)에서 홀드 입력 상태를 강제 해제
-    /// </summary>
     public void CancelInteraction()
     {
         if (activeInteractable != null && holdBegun)
@@ -156,19 +179,34 @@ public class PlayerInteraction : MonoBehaviour
 
     private void CheckInteractable()
     {
+        if (Camera.main == null) return;
+
         Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
         if (Physics.Raycast(ray, out RaycastHit hit, interactRange, interactableLayer))
         {
             IInteractable hitInteractable = hit.collider.GetComponent<IInteractable>();
-            if (hitInteractable == CurrentInteractable) return;
+            if (hitInteractable == null)
+                hitInteractable = hit.collider.GetComponentInParent<IInteractable>();
 
-            CurrentInteractable = hitInteractable;
-            if (CurrentInteractable != null && CurrentInteractable.Data != null)
-                Debug.Log($"currentInteractable : {CurrentInteractable.Data.itemName}");
+            SetCurrentInteractable(hitInteractable);
         }
         else
         {
-            if (CurrentInteractable != null) CurrentInteractable = null;
+            SetCurrentInteractable(null);
         }
+    }
+
+    private void SetCurrentInteractable(IInteractable next)
+    {
+        if (ReferenceEquals(CurrentInteractable, next)) return;
+
+        CurrentInteractable = next;
+        RefreshCrosshairIcon(next);
+    }
+
+    private void RefreshCrosshairIcon(IInteractable target)
+    {
+        if (UI_Crosshair.Instance != null)
+            UI_Crosshair.Instance.SetFromInteractable(target);
     }
 }

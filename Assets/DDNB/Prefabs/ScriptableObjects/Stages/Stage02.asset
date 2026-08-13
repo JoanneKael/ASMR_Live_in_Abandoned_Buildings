@@ -13,7 +13,11 @@ MonoBehaviour:
   m_Name: Stage02
   m_EditorClassIdentifier: Assembly-CSharp::StageData
   stageID: stage_02
-  mapName: Abandoned Hospital
-  sceneName: 
-  missionGold: 0
+  mapName: "\uD3D0\uBCD1\uC6D0"
+  sceneName: Abandoned Hospital
+  missionGoldEasy: 1000
+  missionGoldNormal: 2000
+  missionGoldHard: 3000
   description: 
+  unitPrefab: {fileID: 0}
+  unitData: {fileID: 0}

@@ -15,9 +15,10 @@ public class StageManager : MonoBehaviour
     [SerializeField] private Transform[] patrolAnchors;
 
     private Vector3[] spawnPositions;
-    private Vector3[] patrolPositions;
+    // patrolAnchors 직접 전달 (위치 + forward 필요)
 
     private UnitAI currentUnitAI;
+    private Coroutine spawnRoutine;
 
     public UnitAI CurrentUnitAI => currentUnitAI;
 
@@ -31,13 +32,12 @@ public class StageManager : MonoBehaviour
 
     private void Start()
     {
-        StartCoroutine(IE_GhostSpawnLoop());
+        spawnRoutine = StartCoroutine(IE_SpawnAfterDelay(10f));
     }
 
     private void InitAnchorPositions()
     {
         spawnPositions = ToPositionArray(spawnAnchors);
-        patrolPositions = ToPositionArray(patrolAnchors);
     }
 
     private static Vector3[] ToPositionArray(Transform[] anchors)
@@ -54,23 +54,34 @@ public class StageManager : MonoBehaviour
     }
 
     #region UnitSpawn
-    private IEnumerator IE_GhostSpawnLoop()
+
+    private IEnumerator IE_SpawnAfterDelay(float delay)
     {
-        yield return new WaitForSeconds(10);
+        yield return new WaitForSeconds(delay);
+        spawnRoutine = null;
         SpawnUnit();
     }
 
     private void SpawnUnit()
     {
+        // 이미 살아 있으면 중복 스폰 방지
+        if (currentUnitAI != null) return;
+
         if (spawnPositions == null || spawnPositions.Length == 0)
         {
             Debug.LogError("[StageManager] 스폰 포인트가 설정되지 않았습니다!");
             return;
         }
 
-        if (patrolPositions == null || patrolPositions.Length == 0)
+        if (patrolAnchors == null || patrolAnchors.Length == 0)
         {
             Debug.LogError("[StageManager] 패트롤 포인트가 설정되지 않았습니다!");
+            return;
+        }
+
+        if (stageData == null || stageData.unitPrefab == null)
+        {
+            Debug.LogError("[StageManager] StageData 또는 unitPrefab이 없습니다!");
             return;
         }
 
@@ -81,13 +92,40 @@ public class StageManager : MonoBehaviour
         currentUnitAI = unitObj.GetComponent<UnitAI>();
 
         if (currentUnitAI != null)
-            currentUnitAI.InitUnit(stageData.unitData, patrolPositions);
+            currentUnitAI.InitUnit(stageData.unitData, patrolAnchors);
     }
 
+    /// <summary>공격 후 자폭 등 — 레퍼런스 해제 후 리스폰 예약</summary>
     public void OnUnitDespawned()
     {
         currentUnitAI = null;
-        StartCoroutine(IE_RespawnTimer());
+        ScheduleRespawn(15f);
+    }
+
+    /// <summary>넉아웃/하루 종료 — 즉시 제거, 리스폰은 호출측에서 다음날 예약</summary>
+    public void DespawnForDayEnd()
+    {
+        CancelScheduledSpawn();
+
+        if (currentUnitAI != null)
+        {
+            Destroy(currentUnitAI.gameObject);
+            currentUnitAI = null;
+        }
+    }
+
+    /// <summary>다음날 시작 등 — 딜레이 후 스폰</summary>
+    public void ScheduleRespawn(float delaySeconds)
+    {
+        CancelScheduledSpawn();
+        spawnRoutine = StartCoroutine(IE_SpawnAfterDelay(delaySeconds));
+    }
+
+    private void CancelScheduledSpawn()
+    {
+        if (spawnRoutine == null) return;
+        StopCoroutine(spawnRoutine);
+        spawnRoutine = null;
     }
 
     /// <summary>소음 발생 위치를 현재 유닛에게 전달</summary>
@@ -97,11 +135,6 @@ public class StageManager : MonoBehaviour
         currentUnitAI.HearNoise(worldPosition);
     }
 
-    private IEnumerator IE_RespawnTimer()
-    {
-        yield return new WaitForSeconds(15);
-        SpawnUnit();
-    }
     #endregion
 
     private void OnDrawGizmos()

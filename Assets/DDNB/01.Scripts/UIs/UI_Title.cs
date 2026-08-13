@@ -12,6 +12,26 @@ public class UI_Title : UI_Base
         button_Start.onClick.AddListener(GoToLobby);
         button_Setting.onClick.AddListener(() => UIManager.Instance.ShowUI<UI_Setting>());
         button_Quit.onClick.AddListener(QuitGame);
+        ApplyMenuCursor();
+    }
+
+    private void OnEnable()
+    {
+        ApplyMenuCursor();
+    }
+
+    private void LateUpdate()
+    {
+        // Game 뷰 빈 곳 클릭 시 Cursor Lock이 다시 걸리지 않도록 유지
+        ApplyMenuCursor();
+    }
+
+    private static void ApplyMenuCursor()
+    {
+        if (Cursor.lockState != CursorLockMode.None)
+            Cursor.lockState = CursorLockMode.None;
+        if (!Cursor.visible)
+            Cursor.visible = true;
     }
 
     private void GoToLobby()
@@ -27,7 +47,6 @@ public class UI_Title : UI_Base
 #else
         Application.Quit();
 #endif
-
     }
 
     private void OnDisable()

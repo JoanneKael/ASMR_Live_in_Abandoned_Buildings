@@ -2,116 +2,142 @@
 using UnityEngine;
 
 /// <summary>
-/// 인게임에서 열리고 닫히는 문 (탭 자동 개폐)
-/// Y축만 사용, +방향(closed → open)으로 열림
+/// 인게임에서 열리고 닫히는 문 (탭 자동 개폐).
+/// InteractionVolume에 두고, 실제 회전은 doorMesh(SM_Door)에 적용합니다.
+/// 문 사운드는 3D SFX — 열기/닫기 클립을 분리 재생합니다.
 /// </summary>
 public class InteractableDoor : InteractableObject
 {
+    [Header("Door Mesh")]
+    [Tooltip("실제로 회전하는 문 메쉬 (예: SM_Door_Inside_A1)")]
+    [SerializeField] private Transform doorMesh;
+
     [Header("Door Angles (Y)")]
     [SerializeField] private float closedAngle = 0f;
     [SerializeField] private float openAngle = 90f;
 
-    // --- 홀드&드래그용 (나중에 재활성화 가능) ---
-    // [Header("Drag")]
-    // [SerializeField] private float rotationSpeed = 2.0f;
-    // [SerializeField] private float snapThreshold = 30f;
+    [Header("Audio (3D SFX)")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip openClip;
+    [SerializeField] private AudioClip closeClip;
+    [Tooltip("Resources/Sounds/SFX/door — door_open / door_close")]
+    [SerializeField] private string sfxFolder = "door";
 
     private float currentAngle;
     private bool isOpened;
 
-    /// <summary>문이 열려 있는지</summary>
     public bool IsOpened => isOpened;
+    public Transform DoorMesh => doorMesh != null ? doorMesh : transform;
 
     private void Reset()
     {
-        // inputMode = InteractInputMode.TapAndDrag;
         inputMode = InteractInputMode.Tap;
     }
 
     private void Awake()
     {
-        // inputMode = InteractInputMode.TapAndDrag;
         inputMode = InteractInputMode.Tap;
+
+        if (doorMesh == null)
+        {
+            Transform parent = transform.parent;
+            if (parent != null)
+            {
+                for (int i = 0; i < parent.childCount; i++)
+                {
+                    Transform child = parent.GetChild(i);
+                    if (child == transform) continue;
+                    if (child.name.StartsWith("SM_Door") || child.GetComponent<MeshFilter>() != null)
+                    {
+                        doorMesh = child;
+                        break;
+                    }
+                }
+            }
+        }
+
+        EnsureAudioSource();
+        CacheDefaultClips();
     }
 
     private void Start()
     {
         currentAngle = closedAngle;
         isOpened = false;
-        transform.localRotation = Quaternion.Euler(0f, currentAngle, 0f);
+        ApplyDoorRotation(currentAngle);
     }
 
     public override void Interact()
     {
         StopAllCoroutines();
 
-        float targetAngle = isOpened ? closedAngle : openAngle;
-        isOpened = !isOpened;
+        bool willOpen = !isOpened;
+        float targetAngle = willOpen ? openAngle : closedAngle;
+        isOpened = willOpen;
 
+        PlayDoorSound(willOpen);
         StartCoroutine(RotateDoor(targetAngle));
-
-        // 탭 개폐 소음 (임시 비활성)
-        // if (NoiseManager.Instance != null)
-        // {
-        //     NoiseManager.Instance.ReportNoise(
-        //         NoiseSource.DoorTap,
-        //         transform.position,
-        //         bypassCooldown: true);
-        // }
     }
 
-    /// <summary>유닛 AI가 닫힌 문을 열 때 사용 (소음 없음)</summary>
+    /// <summary>유닛 AI가 닫힌 문을 열 때 사용 (같은 3D 문 사운드)</summary>
     public void OpenForAi()
     {
         if (isOpened) return;
 
         StopAllCoroutines();
         isOpened = true;
+        PlayDoorSound(opening: true);
         StartCoroutine(RotateDoor(openAngle));
     }
 
-    /*
-    // --- 홀드&드래그 개폐 (나중에 재사용) ---
-    public override void BeginHold()
+    private void EnsureAudioSource()
     {
-        StopAllCoroutines();
-    }
+        if (audioSource == null)
+            audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+            audioSource = gameObject.AddComponent<AudioSource>();
 
-    public override void TickHold(Vector2 lookDelta)
-    {
-        float delta = lookDelta.y * rotationSpeed;
-        currentAngle = Mathf.Clamp(currentAngle + delta, closedAngle, openAngle);
-        transform.localRotation = Quaternion.Euler(0f, currentAngle, 0f);
-    }
-
-    public override void EndHold(bool wasHeld)
-    {
-        if (!wasHeld) return;
-        FinalizeDrag();
-    }
-
-    public override void CancelHold()
-    {
-        FinalizeDrag();
-    }
-
-    private void FinalizeDrag()
-    {
-        float targetAngle;
-
-        if (currentAngle >= openAngle - snapThreshold)
-            targetAngle = openAngle;
-        else if (currentAngle <= closedAngle + snapThreshold)
-            targetAngle = closedAngle;
+        if (SoundManager.Instance != null)
+            SoundManager.Instance.ConfigureWorldSfxSource(audioSource);
         else
-            targetAngle = isOpened ? openAngle : closedAngle;
-
-        isOpened = Mathf.Approximately(targetAngle, openAngle);
-
-        StopAllCoroutines();
-        StartCoroutine(RotateDoor(targetAngle));
+        {
+            audioSource.playOnAwake = false;
+            audioSource.spatialBlend = 1f;
+            audioSource.rolloffMode = AudioRolloffMode.Linear;
+            audioSource.minDistance = 1.5f;
+            audioSource.maxDistance = 12f;
+            audioSource.dopplerLevel = 0f;
+        }
     }
-    */
+
+    private void CacheDefaultClips()
+    {
+        if (SoundManager.Instance == null) return;
+
+        string folder = string.IsNullOrEmpty(sfxFolder)
+            ? SoundManager.PathSfxDoor
+            : $"{SoundManager.SfxResourcesRoot}/{sfxFolder}";
+
+        if (openClip == null)
+            openClip = SoundManager.Instance.GetNamedClip(folder, "door_open");
+        if (closeClip == null)
+            closeClip = SoundManager.Instance.GetNamedClip(folder, "door_close");
+    }
+
+    private void PlayDoorSound(bool opening)
+    {
+        EnsureAudioSource();
+        CacheDefaultClips();
+        if (audioSource == null) return;
+
+        AudioClip clip = opening ? openClip : closeClip;
+        if (clip == null) return;
+
+        if (SoundManager.Instance != null)
+            SoundManager.Instance.PlayOneShot(audioSource, clip);
+        else
+            audioSource.PlayOneShot(clip);
+    }
 
     private IEnumerator RotateDoor(float targetAngle)
     {
@@ -123,11 +149,16 @@ public class InteractableDoor : InteractableObject
         {
             elapsed += Time.deltaTime;
             currentAngle = Mathf.Lerp(startAngle, targetAngle, elapsed / duration);
-            transform.localRotation = Quaternion.Euler(0f, currentAngle, 0f);
+            ApplyDoorRotation(currentAngle);
             yield return null;
         }
 
         currentAngle = targetAngle;
-        transform.localRotation = Quaternion.Euler(0f, currentAngle, 0f);
+        ApplyDoorRotation(currentAngle);
+    }
+
+    private void ApplyDoorRotation(float angleY)
+    {
+        DoorMesh.localRotation = Quaternion.Euler(0f, angleY, 0f);
     }
 }
